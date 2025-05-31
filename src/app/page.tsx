@@ -1,0 +1,14 @@
+import OverviewReviewTab from '@/components/OverviewReviewTab'
+import { Button } from '@/components/ui/button'
+import Link from "next/link"
+
+
+export default async function Home() {
+  return (
+    <main>
+      <Link href={'/rating'}>
+      <Button>Rating</Button>
+      </Link>
+    </main>
+  )
+}
