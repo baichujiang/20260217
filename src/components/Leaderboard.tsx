@@ -16,7 +16,7 @@ export interface LeaderboardProps {
 
 export function Leaderboard({ users = [] }: LeaderboardProps) {
   return (
-    <div className="mt-8 bg-yellow-50 p-4 rounded-xl shadow-sm">
+    <div className="mt-8 bg-white-50 p-4 rounded-xl shadow-sm">
       <h2 className="text-lg font-bold text-yellow-900 mb-3">Leaderboard</h2>
       <Tabs defaultValue="Daily" className="w-full">
         <TabsList className="bg-yellow-100 rounded-full p-1 mb-3">

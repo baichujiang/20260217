@@ -49,7 +49,7 @@ export default function Home() {
                 {/* Logo on the left */}
                 {/* Logo that links to home */}
                 <Link href="/" className="shrink-0">
-                    <Image src="/LOGO_leaf.svg" alt="LEAFMIILES Logo" width={100} height={50}/>
+                    <Image src="/LeafMilesLogo.png" alt="LEAFMIILES Logo" width={50} height={50}/>
                 </Link>
 
                 {/* Centered search button */}
@@ -100,19 +100,21 @@ export default function Home() {
 
             {/* Tree Section */}
             <div className="absolute top-1/4 left-1/2 transform -translate-x-1/2 text-center z-10">
-                <motion.div
-                    whileHover={{scale: 1.1, rotate: 5}}
-                    transition={{duration: 0.4, ease: "easeInOut"}}
-                    className="mx-auto w-[300px] h-[300px]"
-                >
-                    <Image
-                        src="/tree.svg"
-                        alt="Tree"
-                        width={300}
-                        height={300}
-                        className="rounded-md w-full h-full"
-                    />
-                </motion.div>
+                <Link href="/tree" passHref>
+                  <motion.div
+                      whileHover={{scale: 1.1, rotate: 5}}
+                      transition={{duration: 0.4, ease: "easeInOut"}}
+                      className="mx-auto w-[300px] h-[300px]"
+                  >
+                      <Image
+                          src="/tree.svg"
+                          alt="Tree"
+                          width={300}
+                          height={300}
+                          className="rounded-md w-full h-full"
+                      />
+                  </motion.div>
+                </Link>
                 <div className="mt-4 text-green-700 font-semibold text-xl shadow-sm">
                     Water your tree!
                 </div>
@@ -120,7 +122,7 @@ export default function Home() {
 
 
             <div className="absolute top-2/3 left-1/2 transform -translate-x-1/2 z-10">
-                <Link href="/RestaurantOverview" passHref>
+                <Link href="/rating" passHref>
                     <motion.div
                         className="w-[200px] shadow-lg rounded-xl overflow-hidden cursor-pointer"
                         whileHover={{scale: 1.05}}
