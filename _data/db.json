@@ -68,7 +68,13 @@
             "address": "Bolzmannstraße 19, 85746 Garching bei München",
             "website": "studentenwerk-muenchen.de",
             "score": 4.9,
-            "susScore": 4.8
+            "susScore": 4.8,
+            "scores": {
+                "sourcing_score": 4.7,
+                "waste_score": 4.6,
+                "menu_score": 4.5,
+                "energy_score": 4.4
+            }
         }
     ]
 }

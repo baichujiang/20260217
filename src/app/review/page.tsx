@@ -1,8 +1,13 @@
+import ReviewForm from "@/components/ReviewForm"
+import TopActionBar from "@/components/TopActionBar"
+
 export default function ReviewPage() {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">Write Your Review</h1>
-      {/* Your form or content here */}
-    </div>
+    <main>
+      <TopActionBar />
+      <div className="p-6">
+        <ReviewForm restaurantId="1"/>
+      </div>
+    </main>
   )
 }
