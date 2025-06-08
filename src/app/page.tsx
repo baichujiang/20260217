@@ -5,10 +5,29 @@ import Link from "next/link"
 
 export default async function Home() {
   return (
-    <main>
+    <><main>
       <Link href={'/rating'}>
-      <Button>Rating</Button>
+        <Button>Rating</Button>
       </Link>
     </main>
+    
+     <main>
+        <Link href={'/tree'}>
+          <Button>tree</Button>
+        </Link>
+      </main>
+
+      <main>
+        <Link href={'/moretrees'}>
+          <Button>moretrees</Button>
+        </Link>
+      </main>
+
+      <main>
+        <Link href={'/badges'}>
+          <Button>badges</Button>
+        </Link>
+      </main>
+      </>
   )
 }
