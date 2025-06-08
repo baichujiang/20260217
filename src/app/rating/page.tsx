@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel"
 import { Badge } from "@/components/ui/badge"
 import { Star } from "lucide-react"
+import TopActionBar from '@/components/TopActionBar'
 
 const images = [
   "/mensa-1.jpg",
@@ -36,6 +37,7 @@ export default async function Home() {
 
   return (
     <main>
+      <TopActionBar />
       <Carousel className="p-6 w-full">
         <CarouselContent>
           {images.map((src, index) => (
@@ -75,15 +77,6 @@ export default async function Home() {
         </Badge>
       </div>
       <OverviewReviewTab></OverviewReviewTab>
-      <div className="fixed bottom-0 left-0 w-full bg-white p-4 border-t sm:static sm:border-none sm:p-0">
-        <div className="max-w-md mx-auto">
-          <Link href="/review">
-            <Button className="w-full bg-green-600 text-white hover:bg-green-700">
-              Write a Review
-            </Button>
-          </Link>
-        </div>
-      </div>
     </main>
   )
 }
