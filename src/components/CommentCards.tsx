@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/card'
 import { Toggle } from "@/components/ui/toggle"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
 
 interface Comment {
   id: string,
@@ -29,10 +28,10 @@ export default async function CommentCards() {
   return (
     <main>
       <div className="flex flex-wrap gap-2 w-screen px-6">
-        <Toggle variant="outline">Local Supplier</Toggle>
-        <Toggle variant="outline">Seasonal Menu</Toggle>
-        <Toggle variant="outline">Vegan</Toggle>
-        <Toggle variant="outline">Reusable Takeaway Box</Toggle>
+        <Toggle variant="outline" className='rounded-3xl'>Local Supplier</Toggle>
+        <Toggle variant="outline" className='rounded-3xl'>Seasonal Menu</Toggle>
+        <Toggle variant="outline" className='rounded-3xl'>Vegan</Toggle>
+        <Toggle variant="outline" className='rounded-3xl'>Reusable Takeaway Box</Toggle>
       </div>
       <div className="flex flex-col divide-y divide-gray-200">
         {comments.map(comment => (
