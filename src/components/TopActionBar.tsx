@@ -9,7 +9,7 @@ import Image from "next/image"
 export default function TopActionBar() {
   const router = useRouter()
   return (
-    <div className="flex items-center justify-between px-4 bg-white sticky top-0 z-50">
+    <div className="flex items-center justify-between px-4 bg-white sticky top-0 z-50 py-2 border-b">
       {/* Back button */}
         <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => router.back()}>

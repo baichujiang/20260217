@@ -147,7 +147,7 @@ export default function TreePage() {
                         value={(current / max) * 100}
                         size="md"
                         indicatorClassName="bg-green-500"
-                        className="bg-gray-100"
+                        className="bg-white shadow-md"
                       />
                       <p className="text-center mt-2 text-lg font-semibold text-gray-900">
                         Growth: {current} / {max}

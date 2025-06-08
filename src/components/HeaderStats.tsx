@@ -19,7 +19,7 @@ export function HeaderStats({
       {/* Badge pill with overlapping avatar */}
       <div
         onClick={() => router.push("/badges")}
-        className="relative inline-flex items-center bg-green-100 rounded-full px-4 pl-12 py-2 cursor-pointer hover:ring-2 hover:ring-green-300 transition"
+        className="relative inline-flex items-center bg-white rounded-full px-4 pl-12 py-2 cursor-pointer hover:ring-2 hover:ring-green-300 transition"
       >
         <Avatar className="absolute left-0 ml-1 w-10 h-10 border-2 border-white">
           <AvatarImage src={avatarUrl} alt="User Avatar" />
@@ -34,7 +34,7 @@ export function HeaderStats({
       {/* Green Points pill */}
       <div
         onClick={() => router.push("/moretrees")}
-        className="inline-flex items-center bg-green-100 rounded-full px-4 py-2 cursor-pointer hover:ring-2 hover:ring-green-300 transition"
+        className="inline-flex items-center bg-white rounded-full px-4 py-2 cursor-pointer hover:ring-2 hover:ring-green-300 transition"
       >
         <div className="flex flex-col items-start leading-tight">
           <span className="text-xs text-gray-600">Green Points</span>
