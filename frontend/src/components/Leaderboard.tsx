@@ -1,53 +1,87 @@
-"use client"
+import React, { useState, useEffect } from 'react';
 
-import Image from "next/image"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-
-export interface User {
-  id: string
-  name: string
-  avatar: string
-  score: number
+// 排行榜条目类型
+interface LeaderboardEntry {
+  user_id: number;
+  points: number;
 }
 
-export interface LeaderboardProps {
-  users: User[]
-}
+type Period = 'daily' | 'week' | 'total';
 
-export function Leaderboard({ users = [] }: LeaderboardProps) {
-  return (
-    <div className="mt-8 bg-white-50 p-4 rounded-xl shadow-sm">
-      <h2 className="text-lg font-bold text-yellow-900 mb-3">Leaderboard</h2>
-      <Tabs defaultValue="Daily" className="w-full">
-        <TabsList className="bg-yellow-100 rounded-full p-1 mb-3">
-          <TabsTrigger value="Daily" className="data-[state=active]:bg-white data-[state=active]:text-yellow-900 px-4 py-1 rounded-full text-sm">Daily</TabsTrigger>
-          <TabsTrigger value="Week" className="data-[state=active]:bg-white data-[state=active]:text-yellow-900 px-4 py-1 rounded-full text-sm">Week</TabsTrigger>
-          <TabsTrigger value="Total" className="data-[state=active]:bg-white data-[state=active]:text-yellow-900 px-4 py-1 rounded-full text-sm">Total</TabsTrigger>
-        </TabsList>
+export const Leaderboard: React.FC = () => {
+  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [period, setPeriod] = useState<Period>('daily');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-        {(["Daily", "Week", "Total"] as const).map((period) => (
-          <TabsContent key={period} value={period} className="p-0">
-            <ul className="space-y-2">
-              {users.map((u, idx) => (
-                <li key={u.id} className="flex items-center justify-between bg-white rounded-lg px-3 py-2 shadow-sm">
-                  <div className="flex items-center space-x-3">
-                    <span className={`text-sm font-bold w-5 text-yellow-600 ${idx < 3 ? 'text-lg' : ''}`}>{idx + 1}</span>
-                    <Image
-                      src={u.avatar}
-                      alt={u.name}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                    <span className="text-sm font-medium text-gray-900 truncate max-w-[100px]">{u.name}</span>
-                  </div>
-                  <span className="text-green-600 font-bold text-sm">{u.score} pts</span>
-                </li>
-              ))}
-            </ul>
-          </TabsContent>
-        ))}
-      </Tabs>
+  // 当 period 变化时，拉取对应排行榜数据
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`http://localhost:8000/watering/leaderboard?period=${period}`);
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const data: LeaderboardEntry[] = await res.json();
+        setEntries(data);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch leaderboard');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [period]);
+
+  // 渲染顶部标签选择
+  const renderTabs = () => (
+    <div className="flex space-x-4 mb-4">
+      <button
+        className={`px-4 py-2 rounded-t-lg ${period === 'daily' ? 'border-b-2 border-green-500 font-semibold' : 'text-gray-500'}`}
+        onClick={() => setPeriod('daily')}
+      >
+        Daily
+      </button>
+      <button
+        className={`px-4 py-2 rounded-t-lg ${period === 'week' ? 'border-b-2 border-green-500 font-semibold' : 'text-gray-500'}`}
+        onClick={() => setPeriod('week')}
+      >
+        Week
+      </button>
+      <button
+        className={`px-4 py-2 rounded-t-lg ${period === 'total' ? 'border-b-2 border-green-500 font-semibold' : 'text-gray-500'}`}
+        onClick={() => setPeriod('total')}
+      >
+        Total
+      </button>
     </div>
-  )
-}
+  );
+
+  // 渲染排行榜列表
+  const renderList = () => {
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p className="text-red-500">{error}</p>;
+    if (entries.length === 0) return <p>暂无数据</p>;
+
+    return (
+      <ol className="divide-y divide-gray-200">
+        {entries.map((e, idx) => (
+          <li key={e.user_id} className="flex justify-between py-2">
+            <span>#{idx + 1}  {e.username}</span>
+            <span className="font-semibold">{e.watering_amount} pts</span>
+          </li>
+        ))}
+      </ol>
+    );
+  };
+
+  return (
+    <div className="bg-white shadow-md rounded-lg p-4">
+      <h2 className="text-xl font-bold mb-2">Leaderboard</h2>
+      {renderTabs()}
+      {renderList()}
+    </div>
+  );
+};
+
+export default Leaderboard;
