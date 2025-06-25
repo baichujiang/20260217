@@ -6,22 +6,56 @@ import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
 import { Star } from "lucide-react"
 
-// You can extend this array or fetch it from a backend
 const restaurantData = [
     {
-        id: "1",
+        id: "mensa1",
         name: "Mensa",
         src: "/mensa-1.jpg",
         score: 4.5,
-        susScore: 4.0
+        susScore: 4.0,
     },
     {
-        id: "2",
+        id: "mensa2",
         name: "Mensa 2",
         src: "/mensa-2.jpg",
         score: 4.0,
-        susScore: 3.8
-    }
+        susScore: 3.8,
+    },
+    {
+        id: "1",
+        name: "Bavarian Haus",
+        src: "/restaurants/R1.jpeg",
+        score: 4.6,
+        susScore: 4.3,
+    },
+    {
+        id: "2",
+        name: "Wirtshaus am Markt",
+        src: "/restaurants/R2.jpeg",
+        score: 4.4,
+        susScore: 4.1,
+    },
+    {
+        id: "3",
+        name: "Augustiner Bräustuben",
+        src: "/restaurants/R3.jpeg",
+        score: 4.7,
+        susScore: 4.5,
+    },
+    {
+        id: "5",
+        name: "Paulaner Bräuhaus",
+        src: "/restaurants/R5.jpeg",
+        score: 4.5,
+        susScore: 4.0,
+    },
+    {
+        id: "10",
+        name: "Spatenhaus an der Oper",
+        src: "/restaurants/R10.jpeg",
+        score: 4.5,
+        susScore: 4.2,
+    },
 ]
 
 export default function ImageScrollSection() {

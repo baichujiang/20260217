@@ -1,184 +1,174 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import Image from "next/image"
-import { useState, useEffect } from "react"
-import { Header } from "@/components/ui/Header"
-import { HeaderStats } from "@/components/HeaderStats"
-import { Leaderboard, User } from "@/components/Leaderboard"
-import { Progress } from "@/components/ui/progress"
+import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
+import React, { useState, useEffect, Suspense } from "react";
+import { Header } from "@/components/ui/Header";
+import { HeaderStats } from "@/components/HeaderStats";
+import { Leaderboard } from "@/components/Leaderboard";
+import { Progress } from "@/components/ui/progress";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselDots,
   type CarouselApi,
-} from "@/components/ui/carousel"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
-export interface TreeData {
-  src: string
-  current: number
-  max: number
+// 接口返回的树类型，来自 TreeTypeOut
+interface TreeType {
+  id: number;
+  species: string;
+  goal_growth_value: number;
+  image_src: string;
+}
+
+// 用户树数据结构，包含 type 嵌套
+interface TreeData {
+  id: number;
+  type: TreeType;
+  growth_value: number;
+  created_at: string;
 }
 
 export default function TreePage() {
-  const [trees, setTrees] = useState<TreeData[]>([
-    { src: "/apple_tree.png", current: 30, max: 100 },
-    { src: "/banana_tree.png", current: 60, max: 100 },
-    { src: "/orange_tree.png", current: 100, max: 100 },
-  ])
-  const badges = 10
-  const [users, setUsers] = useState<User[]>([])
-  const [greenPoints, setGreenPoints] = useState<number>(999)
-  const [emblaApi, setEmblaApi] = useState<CarouselApi | null>(null)
-  const [activeIndex, setActiveIndex] = useState(0)
-  const router = useRouter()
+  const userId = 1;
+  const [trees, setTrees] = useState<TreeData[]>([]);
+  const [greenPoints, setGreenPoints] = useState<number>(0);
+  const [emblaApi, setEmblaApi] = useState<CarouselApi | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  // TODO: error while building
+  // const searchParams = useSearchParams();
 
+  // 获取用户所有树
   useEffect(() => {
-    if (!emblaApi) return
-    const onSelect = () => setActiveIndex(emblaApi.selectedScrollSnap())
-    onSelect()
-    emblaApi.on("select", onSelect)
-    emblaApi.on("reInit", onSelect)
+    const token = localStorage.getItem("token");
+    console.log("🧪 token in localStorage:", token); // ✅ 临时调试用
+  
+    fetchWithAuth(`http://localhost:8000/trees/me`)
+      .then(res => res.json())
+      .then((data: TreeData[]) => {
+        console.log("🐛 trees data fetched:", data); // 👈 添加这行
+        setTrees(data);
+      })
+      .catch(console.error);
+  }, []);
+  
+
+  // 获取用户积分
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetchWithAuth(`http://localhost:8000/points/me/total`)
+      .then(res => res.json())
+      .then(data => setGreenPoints(data.total_points))
+      .catch(console.error);
+  }, []);
+
+  // 若有 new 参数，自动创建
+  // useEffect(() => {
+  //   const typeId = searchParams.get("new");
+  //   if (typeId) handleCreateTree(Number(typeId));
+  // }, [searchParams]);
+
+  // 浇水
+  async function handleWater(treeId: number, idx: number) {
+    try {
+      const res = await fetchWithAuth(`http://localhost:8000/trees/${treeId}/water`, {
+        method: "POST",
+        body: JSON.stringify({ amount: 10 }),
+      });
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      const updated: TreeData = await res.json();
+      setTrees(prev => prev.map((t, i) => i === idx ? updated : t));
+      setGreenPoints(prev => prev - 10);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+
+  // 创建新树
+  async function handleCreateTree(type_id: number) {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetchWithAuth("http://localhost:8000/trees/", {
+        method: "POST",
+        body: JSON.stringify({ type_id }),
+      });
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      const t: TreeData = await res.json();
+      setTrees(prev => [...prev, t]);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+
+  // Carousel 监听
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setActiveIndex(emblaApi.selectedScrollSnap());
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
     return () => {
-      emblaApi.off("select", onSelect)
-      emblaApi.off("reInit", onSelect)
-    }
-  }, [emblaApi])
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi]);
 
-  useEffect(() => {
-    fetch("http://localhost:4000/users")
-        .then((res) => res.json())
-        .then((data) => setUsers(data))
-        .catch(console.error)
-  }, [])
-
-  function handleWater(index: number) {
-    if (trees[index].current < trees[index].max && greenPoints >= 10) {
-      setGreenPoints((prev) => prev - 10)
-      setTrees((prev) =>
-          prev.map((t, i) =>
-              i === index ? { ...t, current: Math.min(t.current + 10, t.max) } : t
-          )
-      )
-    }
-  }
-
-  function handleHarvest(index: number) {
-    setTrees((prev) =>
-        prev.map((t, i) => (i === index ? { ...t, current: 0 } : t))
-    )
-  }
-
-  function goPrev() {
-    emblaApi?.scrollPrev()
-  }
-
-  function goNext() {
-    emblaApi?.scrollNext()
-  }
+  function goPrev() { emblaApi?.scrollPrev(); }
+  function goNext() { emblaApi?.scrollNext(); }
 
   return (
-      <div className="min-h-screen bg-white">
-        {/* ✅ Shared header from main page */}
-        <Header />
-
-        <section className="relative">
-          {/* Background */}
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
-          <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
-
-          <div className="p-4 pb-0">
-            <HeaderStats badges={badges} greenPoints={greenPoints} />
-
-            <div className="relative w-full mt-4">
-              <button
-                  onClick={goPrev}
-                  className="absolute top-1/2 -translate-y-1/2 left-2 z-10 p-2 w-12 h-12 flex items-center justify-center text-white border-2 border-white rounded-full transition hover:ring-2 hover:ring-white hover:bg-white/10 backdrop-blur"
-              >
-                ❮
-              </button>
-
-              <Carousel setApi={setEmblaApi} opts={{ loop: true }}>
-                <CarouselContent className="p-4 pb-6">
-                  {trees.map(({ src, current, max }, idx) => (
-                      <CarouselItem
-                          key={idx}
-                          className="relative flex flex-col items-center justify-end space-y-4 min-h-[400px]"
-                      >
-                        <Button
-                            variant="ghost"
-                            size="lg"
-                            onClick={() => handleWater(idx)}
-                            disabled={current >= max || greenPoints < 10}
-                            title="Water Plant"
-                            className="absolute top-2 right-1 p-1 bg-transparent border-none shadow-none hover:ring-2 hover:ring-green-400 hover:ring-offset-2 transition hover:scale-105 active:animate-wiggle"
-                        >
-                          <Image
-                              src="/kettle.png"
-                              alt="Watering Kettle"
-                              width={96}
-                              height={96}
-                          />
-                        </Button>
-
-                        <div className="relative w-64 h-64">
-                          <Image
-                              src={src}
-                              alt={`Tree ${idx + 1}`}
-                              fill
-                              className="object-cover object-bottom rounded-lg"
-                          />
-                        </div>
-
-                        <div className="relative w-full px-4">
-                          {current === max && (
-                              <div className="absolute -top-6 right-4 flex items-center gap-2 animate-bounce">
-                                <Image
-                                    src="/fruit.png"
-                                    alt="Fruit"
-                                    width={32}
-                                    height={32}
-                                />
-                                <button
-                                    onClick={() => handleHarvest(idx)}
-                                    className="text-xs bg-yellow-300 rounded px-2 py-1 font-semibold text-white shadow hover:bg-yellow-400 transition"
-                                >
-                                  Harvest
-                                </button>
-                              </div>
-                          )}
-                          <Progress
-                              value={(current / max) * 100}
-                              size="md"
-                              indicatorClassName="bg-green-500"
-                              className="bg-white shadow-md"
-                          />
-                          <p className="text-center mt-2 text-lg font-semibold text-gray-900">
-                            Growth: {current} / {max}
-                          </p>
-                        </div>
-                      </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselDots />
-              </Carousel>
-
-              <button
-                  onClick={goNext}
-                  className="absolute top-1/2 -translate-y-1/2 right-2 z-10 p-2 w-12 h-12 flex items-center justify-center text-white border-2 border-white rounded-full transition hover:ring-2 hover:ring-white hover:bg-white/10 backdrop-blur"
-              >
-                ❯
-              </button>
-            </div>
+    <div className="min-h-screen bg-white">
+      <Header />
+      <section className="relative">
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
+        <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
+        <div className="p-4 pb-0">
+          <HeaderStats badges={10} greenPoints={greenPoints} avatarUrl = "/avatar-default.svg"/>
+          <div className="relative w-full mt-4">
+            <button onClick={goPrev} className="absolute top-1/2 left-2 z-10 p-2">❮</button>
+            <Carousel setApi={setEmblaApi} opts={{ loop: true }}>
+              <CarouselContent className="p-4 pb-6">
+                {trees.map((tree, idx) => {
+                  const { id, type, growth_value } = tree;
+                  const max = type.goal_growth_value;
+                  const src = type.image_src;
+                  const percent = Math.min(100, Math.max(0, (growth_value / max) * 100));
+                  return (
+                    <CarouselItem key={id} className="relative flex flex-col items-center justify-end space-y-4 min-h-[400px]">
+                      <Button variant="ghost" size="lg" onClick={() => handleWater(id, idx)} disabled={growth_value >= max || greenPoints < 10} title="Water Plant">
+                        <Image src="/kettle.png" alt="Watering Kettle" width={96} height={96} />
+                      </Button>
+                      <div className="relative w-64 h-64">
+                        <Image src={src} alt={`${type.species} Tree`} fill className="object-cover object-bottom rounded-lg" />
+                      </div>
+                      <div className="relative w-full px-4">
+                        {growth_value >= max && (
+                          <div className="absolute -top-6 right-4 flex items-center gap-2 animate-bounce">
+                            <Image src="/fruit.png" alt="Fruit" width={32} height={32} />
+                            <button onClick={() => handleCreateTree(type.id)} className="text-xs bg-yellow-300 rounded px-2 py-1 font-semibold text-white">Harvest</button>
+                          </div>
+                        )}
+                        <Progress value={percent} size="md" indicatorClassName="bg-green-500" className="bg-white shadow-md" />
+                        <p className="text-center mt-2 text-lg font-semibold text-gray-900">Growth: {growth_value} / {max}</p>
+                      </div>
+                    </CarouselItem>
+                  );
+                })}
+              </CarouselContent>
+              <CarouselDots />
+            </Carousel>
+            <button onClick={goNext} className="absolute top-1/2 right-2 z-10 p-2">❯</button>
           </div>
-        </section>
-
-        <div className="-mt-6 px-4" />
-
-        {/* Leaderboard */}
-        <Leaderboard users={users} />
-      </div>
-  )
+        </div>
+      </section>
+      <div className="-mt-6 px-4" />
+      <Leaderboard />
+    </div>
+  );
 }
