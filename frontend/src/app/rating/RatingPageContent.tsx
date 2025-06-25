@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import OverviewReviewTab from '@/components/OverviewReviewTab';
+import { Badge } from '@/components/ui/badge'
+import { Star } from 'lucide-react'
 
 interface Restaurant {
   id: string;
@@ -45,20 +47,28 @@ export default function RatingPageContent() {
 
   return (
     <>
-      <h3 className="px-6 scroll-m-20 text-2xl font-semibold tracking-tight">
+        <h3 className="px-6 scroll-m-20 text-2xl font-semibold tracking-tight">
         {restaurant.name}
-      </h3>
+        </h3>
 
-      <div className="px-6 py-2 gap-2 flex flex-row">
-        <span className="text-base bg-muted px-2 py-1 rounded-full">
-          {restaurant.score}
-        </span>
-        <span className="text-base text-green-500 bg-muted px-2 py-1 rounded-full">
-          {restaurant.susScore}
-        </span>
-      </div>
+        <div className='px-6 py-2 gap-2 flex flex-row'>
+            <Badge
+                variant="outline"
+                className="text-base"
+            >
+                <Star fill="currentColor" />
+                {restaurant.score}
+            </Badge>
+            <Badge
+                variant="outline"
+                className="text-green-500 text-base"
+            >
+                <Star fill="currentColor" />
+                {restaurant.susScore}
+            </Badge>
+        </div>
 
-      <OverviewReviewTab restaurantId={id} />
+        <OverviewReviewTab restaurantId={id} />
     </>
   );
 }
