@@ -63,7 +63,7 @@
     ],
     "restaurants": [
         {
-            "id": "1",
+            "id": "mensa1",
             "name": "Garching Mensa",
             "address": "Bolzmannstraße 19, 85746 Garching bei München",
             "website": "studentenwerk-muenchen.de",

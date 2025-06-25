@@ -34,7 +34,6 @@ export default function Home() {
                             </Button>
                         </DrawerTrigger>
                         <DrawerContent
-                            side="left"
                             className="h-full w-64 bg-white shadow-lg rounded-none p-4 fixed top-0 left-0"
                         >
                             <div className="space-y-4 mt-8">

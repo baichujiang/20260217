@@ -20,7 +20,7 @@ export default function AccountPage() {
                     <form className="space-y-4">
                         <input
                             type="email"
-                            placeholder="Email"
+                            placeholder="Username"
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <input
@@ -28,13 +28,6 @@ export default function AccountPage() {
                             placeholder="Password"
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        {isRegistering && (
-                            <input
-                                type="text"
-                                placeholder="Username"
-                                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        )}
                         <Button type="submit" className="w-full">
                             {isRegistering ? "Register" : "Login"}
                         </Button>

@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 // 排行榜条目类型
 interface LeaderboardEntry {
   user_id: number;
+  username: string;
   points: number;
+  watering_amount: number;
 }
 
 type Period = 'daily' | 'week' | 'total';

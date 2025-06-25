@@ -1,29 +1,41 @@
+"use client"
+
 import {
   Card,
   CardHeader,
-  CardFooter,
   CardTitle,
-  CardAction,
   CardDescription,
   CardContent,
 } from '@/components/ui/card'
 import { Toggle } from "@/components/ui/toggle"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useEffect, useState } from "react"
 
 interface Comment {
-  id: string,
-  userName: string,
-  date: string,
+  id: string
+  userName: string
+  date: string
   content: string
 }
 
-async function getComments(): Promise<Comment[]> {
-  const result = await fetch('http://localhost:4000/comments')
-  return result.json()
-}
+export default function CommentCards() {
+  const [comments, setComments] = useState<Comment[]>([])
 
-export default async function CommentCards() {
-  const comments = await getComments()
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const result = await fetch("http://localhost:4000/comments", {
+          cache: "no-store",
+        })
+        const data = await result.json()
+        setComments(data)
+      } catch (error) {
+        console.error("Failed to fetch comments:", error)
+      }
+    }
+
+    fetchComments()
+  }, [])
 
   return (
     <main>
@@ -35,11 +47,11 @@ export default async function CommentCards() {
       </div>
       <div className="flex flex-col divide-y divide-gray-200">
         {comments.map(comment => (
-          <Card key={comment.id} className='w-screen flex felx-col justify-between border-none shadow-none'>
+          <Card key={comment.id} className='w-screen flex flex-col justify-between border-none shadow-none'>
             <CardHeader className="flex flex-row gap-4 items-center">
               <Avatar>
-                <AvatarImage src="/avatar-default.svg" alt="default-avatar"/>
-                <AvatarFallback>{comment.userName.slice(0,2)}</AvatarFallback>
+                <AvatarImage src="/avatar-default.svg" alt="default-avatar" />
+                <AvatarFallback>{comment.userName.slice(0, 2)}</AvatarFallback>
               </Avatar>
               <div>
                 <CardTitle>{comment.userName}</CardTitle>

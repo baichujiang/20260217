@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Header } from "@/components/ui/Header";
 import { HeaderStats } from "@/components/HeaderStats";
 import { Leaderboard } from "@/components/Leaderboard";
@@ -39,7 +39,8 @@ export default function TreePage() {
   const [greenPoints, setGreenPoints] = useState<number>(0);
   const [emblaApi, setEmblaApi] = useState<CarouselApi | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const searchParams = useSearchParams();
+  // TODO: error while building
+  // const searchParams = useSearchParams();
 
   // 获取用户所有树
   useEffect(() => {
@@ -66,10 +67,10 @@ export default function TreePage() {
   }, []);
 
   // 若有 new 参数，自动创建
-  useEffect(() => {
-    const typeId = searchParams.get("new");
-    if (typeId) handleCreateTree(Number(typeId));
-  }, [searchParams]);
+  // useEffect(() => {
+  //   const typeId = searchParams.get("new");
+  //   if (typeId) handleCreateTree(Number(typeId));
+  // }, [searchParams]);
 
   // 浇水
   async function handleWater(treeId: number, idx: number) {
@@ -128,7 +129,7 @@ export default function TreePage() {
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
         <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
         <div className="p-4 pb-0">
-          <HeaderStats badges={10} greenPoints={greenPoints} />
+          <HeaderStats badges={10} greenPoints={greenPoints} avatarUrl = "/avatar-default.svg"/>
           <div className="relative w-full mt-4">
             <button onClick={goPrev} className="absolute top-1/2 left-2 z-10 p-2">❮</button>
             <Carousel setApi={setEmblaApi} opts={{ loop: true }}>
