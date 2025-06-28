@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 
 class UserCreate(BaseModel):
     username: str
@@ -10,7 +9,7 @@ class UserRead(BaseModel):
     username: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # ✅ use this instead of orm_mode in Pydantic v2
 
 class Token(BaseModel):
     access_token: str
