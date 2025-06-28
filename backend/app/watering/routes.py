@@ -11,6 +11,8 @@ from .models import WateringLog
 from .schemas import UserOut
 from ..tree.models import Tree
 from app.users.deps import get_current_user
+from pydantic import BaseModel, Field
+
 
 router = APIRouter()
 
@@ -70,10 +72,14 @@ async def get_leaderboard(
     return leaderboard
 
 
+class WaterRequest(BaseModel):
+    amount: int = Field(..., description="Amount of water to apply (also equals point to deduct)")
+
+
 @router.post("/trees/{tree_id}/water")
 async def water_tree(
     tree_id: int,
-    amount: int = Query(..., description="Amount of water to apply (also equals point to deduct)"),
+    req: WaterRequest,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

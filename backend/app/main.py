@@ -8,6 +8,8 @@ from app.points.routes import router as points_router
 from app.auth import models as auth_models
 from app.users.routes import router as users_router
 from app.watering.routes import router as watering_router
+from app.harvest import models as harvest_models
+from app.harvest.routes import router as harvest_router
 
 
 from fastapi.middleware.cors import CORSMiddleware  # 导入 CORS 中间件
@@ -16,7 +18,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 写上前端地址
+    allow_origins=["http://localhost:3000"],  # 写上前端地址
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,6 +29,7 @@ app.include_router(tree_router)
 app.include_router(points_router)
 app.include_router(users_router)
 app.include_router(watering_router)
+app.include_router(harvest_router)
 
 @app.get("/")
 async def root():
