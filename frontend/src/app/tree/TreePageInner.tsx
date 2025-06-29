@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect } from "react";
 import { Header } from "@/components/ui/Header";
 import { HeaderStats } from "@/components/HeaderStats";
 import { Leaderboard } from "@/components/Leaderboard";
@@ -16,11 +16,6 @@ import {
 } from "@/components/ui/carousel";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import RewardModal, { AddressFormData } from "@/components/RewardModal";
-
-import { Suspense } from "react";
-import TreePageInner from "./TreePageInner";
-
-
 
 interface TreeType {
   id: number;
@@ -36,23 +31,19 @@ interface TreeData {
   created_at: string;
 }
 
-export default function TreePage() {
+export default function TreePageInner() {
   const [trees, setTrees] = useState<TreeData[]>([]);
   const [greenPoints, setGreenPoints] = useState<number>(0);
   const [emblaApi, setEmblaApi] = useState<CarouselApi | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [selectedTreeId, setSelectedTreeId] = useState<number | null>(null);
-  const [isPouring, setIsPouring] = useState(false); // 🆕 添加动画状态
   const searchParams = useSearchParams();
 
   useEffect(() => {
     fetchWithAuth(`http://localhost:8000/trees/me`)
       .then(res => res.json())
-      .then((data: TreeData[]) => {
-        console.log("🐛 trees data fetched:", data);
-        setTrees(data);
-      })
+      .then((data: TreeData[]) => setTrees(data))
       .catch(console.error);
   }, []);
 
@@ -86,33 +77,23 @@ export default function TreePage() {
     currentTree.growth_value < currentTree.type.goal_growth_value &&
     greenPoints >= 10;
 
-    async function handleWater(treeId: number, idx: number) {
-      setIsPouring(false); // 清除之前动画状态（强制重触发）
-      void requestAnimationFrame(() => {
-        setIsPouring(true); // 下一帧再设为 true，触发动画
-      });
-    
-      try {
-        const res = await fetchWithAuth(
-          `http://localhost:8000/trees/${treeId}/water`,
-          {
-            method: "POST",
-            body: JSON.stringify({ amount: 10 }),
-          }
-        );
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        const updated: TreeData = await res.json();
-        setTrees(prev =>
-          prev.map((t, i) => (i === idx ? updated : t))
-        );
-        setGreenPoints(prev => prev - 10);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setTimeout(() => setIsPouring(false), 1200); // 动画持续时间后清除
-      }
+  async function handleWater(treeId: number, idx: number) {
+    try {
+      const res = await fetchWithAuth(
+        `http://localhost:8000/trees/${treeId}/water`,
+        {
+          method: "POST",
+          body: JSON.stringify({ amount: 10 }),
+        }
+      );
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      const updated: TreeData = await res.json();
+      setTrees(prev => prev.map((t, i) => (i === idx ? updated : t)));
+      setGreenPoints(prev => prev - 10);
+    } catch (e) {
+      console.error(e);
     }
-    
+  }
 
   async function handleCreateTree(type_id: number) {
     try {
@@ -144,13 +125,9 @@ export default function TreePage() {
         }
       );
       if (!res.ok) throw new Error("Failed to harvest tree");
-
       const updated: TreeData = await res.json();
-
       setTrees(prev =>
-        prev.map(tree =>
-          tree.id === updated.id ? updated : tree
-        )
+        prev.map(tree => (tree.id === updated.id ? updated : tree))
       );
       setShowRewardModal(false);
       setSelectedTreeId(null);
@@ -175,7 +152,7 @@ export default function TreePage() {
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
         <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
         <div className="p-4 pb-0">
-          <HeaderStats badges={10} greenPoints={greenPoints} avatarUrl = "/avatar-default.svg"/>
+          <HeaderStats badges={10} greenPoints={greenPoints} avatarUrl = "/avatar-default.svg" />
 
           <div className="relative w-full mt-4">
             {currentTree && (
@@ -199,7 +176,6 @@ export default function TreePage() {
                     alt="Watering Kettle"
                     width={96}
                     height={96}
-                    className={isPouring ? "animate-pour" : ""}
                   />
                 </button>
               </div>
