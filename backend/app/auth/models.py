@@ -1,19 +1,11 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from ..core.database import Base
 
-class User(Base):
-    __tablename__ = "users"
-
+class UserCredentials(Base):
+    __tablename__ = "user_credentials"
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    user_id = Column(ForeignKey("users.id"))
+    hashed_password = Column(String)
 
-    # ✅ Relationships to other models
-    trees = relationship("Tree", back_populates="user", cascade="all, delete-orphan")
-    points = relationship("Point", back_populates="user", cascade="all, delete-orphan")
-    watering_logs = relationship("WateringLog", back_populates="user", cascade="all, delete-orphan")
-    rewards = relationship("RewardDelivery", back_populates="user")
-
-# app/auth/models.py 末尾加：
-from app.harvest.models import RewardDelivery  # 避免 circular import 但确保 SQLAlchemy 注册到这个类
+    user = relationship("User", back_populates="credentials")

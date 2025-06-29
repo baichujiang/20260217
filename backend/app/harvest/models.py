@@ -26,4 +26,4 @@ class RewardDelivery(Base):
     user = relationship("User", back_populates="rewards", lazy="joined")
     tree = relationship("Tree", lazy="joined")
 
-from app.auth.models import User  # ⬅ 放在文件结尾，避免循环引用
+from app.users.models import User  # ⬅ 放在文件结尾，避免循环引用

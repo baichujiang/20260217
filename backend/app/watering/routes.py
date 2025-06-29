@@ -10,7 +10,7 @@ from ..users.models import User
 from .models import WateringLog
 from .schemas import UserOut
 from ..tree.models import Tree
-from app.users.deps import get_current_user
+from app.auth.services import get_current_user
 from pydantic import BaseModel, Field
 
 

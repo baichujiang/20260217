@@ -1,22 +1,35 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
+from .core.database import engine
+from .utils.init_models import init_models
+from .core.config import settings
+from .scripts.migrate_restaurants import migrate_restaurants
+
+from .restaurant.routes import router as restaurant_router
 from app.auth.routes import router as auth_router
 from app.tree.routes import router as tree_router
 from app.points.routes import router as points_router
 from app.users.routes import router as users_router
 from app.watering.routes import router as watering_router
-from app.harvest import models as harvest_models
 from app.harvest.routes import router as harvest_router
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("[Startup] Verifying/Creating database tables...")
+    await init_models(engine)
+    print("[Startup] Migrating restaurant data...")
+    await migrate_restaurants()
 
-from app.core.database import engine, Base  # shared database
+    yield
 
-app = FastAPI()
+    print("[Shutdown]")
 
-# ✅ CORS: Allow frontend to connect to backend
+app = FastAPI(lifespan=lifespan)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # 写上前端地址
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,15 +41,8 @@ app.include_router(points_router)
 app.include_router(users_router)
 app.include_router(watering_router)
 app.include_router(harvest_router)
+app.include_router(restaurant_router)
 
 @app.get("/")
 async def root():
     return {"message": "Welcome to LeafMiles"}
-
-# ✅ On startup: create database tables
-@app.on_event("startup")
-async def on_startup():
-    async with engine.begin() as conn:
-        # Uncomment the next line to drop all tables each time (⚠️ DANGEROUS in prod)
-        # await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)

@@ -5,11 +5,11 @@ from sqlalchemy.orm import selectinload
 from datetime import datetime
 
 from app.core.database import get_db
-from app.auth.service import get_current_user
+from app.auth.services import get_current_user
 from app.harvest.schemas import HarvestRewardRequest
 from app.tree.models import Tree
 from app.harvest.models import RewardDelivery
-from app.auth.models import User
+from app.users.models import User
 
 router = APIRouter()
 
