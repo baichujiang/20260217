@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession                     # 异步数�
 from app.core.database import get_db         
 from sqlalchemy import select                                        # 获取数据库依赖
 from . import service, schemas, models                                       # 引入 service 与 schema
-from app.users.deps import get_current_user  # ✅ 导入
+from app.auth.services import get_current_user  # ✅ 导入
 from app.users.models import User
 from typing import List
 from app.watering.schemas import WaterTreeRequest
