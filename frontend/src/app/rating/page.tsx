@@ -15,30 +15,7 @@ import { Restaurant } from "@/types/restaurant"
 // TODO: real pictures
 const images = ["/mensa-1.jpg", "/mensa-2.jpg"];
 
-async function fetchRestaurant(id: string): Promise<Restaurant | null> {
-  try {
-    const res = await fetch(`http://localhost:8000/restaurants/${id}`, {
-      cache: "no-store"
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data;
-  } catch {
-    return null;
-  }
-}
-
-export default async function RatingPage({
-  searchParams,
-}: {
-  searchParams: { id?: string };
-}) {
-  const id = searchParams?.id;
-  if (!id) return notFound();
-
-  const restaurant = await fetchRestaurant(id);
-  if (!restaurant) return notFound();
-
+export default function RatingPage() {
   return (
     <main className="min-h-screen bg-white">
       <Header />
@@ -64,7 +41,7 @@ export default async function RatingPage({
       </Carousel>
 
       <Suspense fallback={<div className="p-6">Loading restaurant details...</div>}>
-        <RatingPageContent {...restaurant}/>
+        <RatingPageContent />
       </Suspense>
     </main>
   );
