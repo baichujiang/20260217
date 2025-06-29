@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { Header } from "@/components/ui/Header";
@@ -16,6 +15,8 @@ import {
 } from "@/components/ui/carousel";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import RewardModal, { AddressFormData } from "@/components/RewardModal";
+import SearchParamHandler from "./SearchParamHandler";
+import { Suspense } from "react";
 
 interface TreeType {
   id: number;
@@ -31,14 +32,14 @@ interface TreeData {
   created_at: string;
 }
 
-export default function TreePageInner() {
+export default function ClientTreePage() {
   const [trees, setTrees] = useState<TreeData[]>([]);
   const [greenPoints, setGreenPoints] = useState<number>(0);
   const [emblaApi, setEmblaApi] = useState<CarouselApi | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [selectedTreeId, setSelectedTreeId] = useState<number | null>(null);
-  const searchParams = useSearchParams();
+  const [isPouring, setIsPouring] = useState(false);
 
   useEffect(() => {
     fetchWithAuth(`http://localhost:8000/trees/me`)
@@ -53,11 +54,6 @@ export default function TreePageInner() {
       .then(data => setGreenPoints(data.total_points))
       .catch(console.error);
   }, []);
-
-  useEffect(() => {
-    const typeId = searchParams.get("new");
-    if (typeId) handleCreateTree(Number(typeId));
-  }, [searchParams]);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -78,6 +74,9 @@ export default function TreePageInner() {
     greenPoints >= 10;
 
   async function handleWater(treeId: number, idx: number) {
+    setIsPouring(false);
+    void requestAnimationFrame(() => setIsPouring(true));
+
     try {
       const res = await fetchWithAuth(
         `http://localhost:8000/trees/${treeId}/water`,
@@ -92,6 +91,8 @@ export default function TreePageInner() {
       setGreenPoints(prev => prev - 10);
     } catch (e) {
       console.error(e);
+    } finally {
+      setTimeout(() => setIsPouring(false), 1200);
     }
   }
 
@@ -126,9 +127,7 @@ export default function TreePageInner() {
       );
       if (!res.ok) throw new Error("Failed to harvest tree");
       const updated: TreeData = await res.json();
-      setTrees(prev =>
-        prev.map(tree => (tree.id === updated.id ? updated : tree))
-      );
+      setTrees(prev => prev.map(tree => (tree.id === updated.id ? updated : tree)));
       setShowRewardModal(false);
       setSelectedTreeId(null);
     } catch (e) {
@@ -147,12 +146,16 @@ export default function TreePageInner() {
 
   return (
     <div className="min-h-screen relative">
+      <Suspense fallback={null}>
+        <SearchParamHandler onCreate={handleCreateTree} />
+      </Suspense>
+
       <Header />
       <section className="relative">
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
         <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
         <div className="p-4 pb-0">
-          <HeaderStats badges={10} greenPoints={greenPoints} avatarUrl = "/avatar-default.svg" />
+          <HeaderStats badges={10} greenPoints={greenPoints} avatarUrl="/avatar-default.svg" />
 
           <div className="relative w-full mt-4">
             {currentTree && (
@@ -176,17 +179,13 @@ export default function TreePageInner() {
                     alt="Watering Kettle"
                     width={96}
                     height={96}
+                    className={isPouring ? "animate-pour" : ""}
                   />
                 </button>
               </div>
             )}
 
-            <button
-              onClick={goPrev}
-              className="absolute top-1/2 left-2 z-10 p-2"
-            >
-              ❮
-            </button>
+            <button onClick={goPrev} className="absolute top-1/2 left-2 z-10 p-2">❮</button>
 
             <Carousel setApi={setEmblaApi} opts={{ loop: true }}>
               <CarouselContent className="p-4 pb-6">
@@ -194,10 +193,7 @@ export default function TreePageInner() {
                   const { id, type, growth_value } = tree;
                   const max = type.goal_growth_value;
                   const src = type.image_src;
-                  const percent = Math.min(
-                    100,
-                    Math.max(0, (growth_value / max) * 100)
-                  );
+                  const percent = Math.min(100, Math.max(0, (growth_value / max) * 100));
                   return (
                     <CarouselItem
                       key={id}
@@ -206,7 +202,7 @@ export default function TreePageInner() {
                       <div className="relative w-64 h-64">
                         <Image
                           src={src}
-                          alt={`${type.species}`}
+                          alt={type.species}
                           fill
                           className="object-cover object-bottom rounded-lg"
                           priority
@@ -215,12 +211,7 @@ export default function TreePageInner() {
                       <div className="relative w-full px-4">
                         {growth_value >= max && (
                           <div className="absolute -top-12 right-0 flex items-center gap-2 animate-bounce">
-                            <Image
-                              src="/fruit.png"
-                              alt="Fruit"
-                              width={64}
-                              height={64}
-                            />
+                            <Image src="/fruit.png" alt="Fruit" width={64} height={64} />
                             <button
                               onClick={() => openHarvestModal(id)}
                               className="text-md bg-yellow-300 rounded px-2 py-1 font-semibold text-white"
@@ -246,12 +237,7 @@ export default function TreePageInner() {
               <CarouselDots />
             </Carousel>
 
-            <button
-              onClick={goNext}
-              className="absolute top-1/2 right-2 z-10 p-2"
-            >
-              ❯
-            </button>
+            <button onClick={goNext} className="absolute top-1/2 right-2 z-10 p-2">❯</button>
           </div>
         </div>
       </section>
