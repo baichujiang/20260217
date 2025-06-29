@@ -22,7 +22,7 @@ class Review(Base):
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     tags = relationship("ReviewTag", secondary=review_tag_association, back_populates="reviews")
-    # user = relationship("User", back_populates="reviews")
+    user = relationship("User", back_populates="reviews")
     restaurant = relationship("Restaurant", back_populates="reviews")
 
 

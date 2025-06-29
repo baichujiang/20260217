@@ -5,15 +5,16 @@ from contextlib import asynccontextmanager
 from .auth.routes import router as auth_router
 from .restaurant.routes import router as restaurant_router
 from .core.database import engine
-from .auth import models as user_model
-from .restaurant import models as restaurant_model
+from .utils.init_models import init_models
+from .core.config import settings
+from .scripts.migrate_restaurants import migrate_restaurants
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup code
     print("[Startup] Verifying/Creating database tables...")
-    user_model.Base.metadata.create_all(bind=engine)
-    restaurant_model.Base.metadata.create_all(bind=engine)
+    await init_models(engine)
+    print("[Startup] Migrating restaurant data...")
+    await migrate_restaurants()
 
     yield
 

@@ -3,6 +3,8 @@ uvicorn
 sqlalchemy
 asyncpg
 passlib
+pandas
+bcrypt
 python-jose
 python-dotenv
 pydantic-settings

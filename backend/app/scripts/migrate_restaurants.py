@@ -1,32 +1,35 @@
 import pandas as pd
-from sqlalchemy.orm import Session
-from ..core.database import SessionLocal
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from ..core.database import AsyncSessionLocal
 from ..restaurant.models import Restaurant
 
-CSV_PATH = "../../_data/munich_restaurants.csv"
+CSV_PATH = "./_data/munich_restaurants.csv"
 
-def migrate_data():
-    df = pd.read_csv(CSV_PATH)
+async def migrate_restaurants():
+    df = pd.read_csv(CSV_PATH, encoding="utf-8")
 
-    df = df[["name", "address", "website", "normal_score"]].dropna(subset=["name", "address", "website"])
+    async with AsyncSessionLocal() as db:
+        try:
+            # OPTIONAL: skip if already populated
+            result = await db.execute(select(Restaurant))
+            existing_restaurants = result.scalars().all()
+            if existing_restaurants:
+                print("[Migration] Restaurants already exist — skipping migration.")
+                return
 
-    db: Session = SessionLocal()
-    try:
-        for _, row in df.iterrows():
-            restaurant = Restaurant(
-                name=row["name"],
-                address=row["address"],
-                website=row["website"],
-                normal_score=row["normal_score"]
-            )
-            db.add(restaurant)
-        db.commit()
-        print(f"{len(df)} restaurants migrated successfully.")
-    except Exception as e:
-        db.rollback()
-        print("Migration failed:", e)
-    finally:
-        db.close()
+            for _, row in df.iterrows():
+                restaurant = Restaurant(
+                    name=row["name"],
+                    address=row["address"],
+                    website=row["website"],
+                    normal_score=row["normal_score"] if pd.notna(row["normal_score"]) else None
+                )
+                db.add(restaurant)
 
-if __name__ == "__main__":
-    migrate_data()
+            await db.commit()
+            print(f"[Migration] {len(df)} restaurants migrated successfully.")
+
+        except Exception as e:
+            await db.rollback()
+            print("[Migration] Failed:", e)

@@ -5,7 +5,7 @@ from typing import Optional
 class RestaurantBase(BaseModel):
     name: str = Field(...)
     address: str = Field(...)
-    website: Optional[HttpUrl] = Field(None)
+    website: Optional[str] = Field(None)
     normal_score: Optional[float] = None
     sustainability_score: Optional[float] = None
     sourcing_score: Optional[float] = None

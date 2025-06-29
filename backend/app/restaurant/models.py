@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Float, relationship
+from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy.orm import relationship
 from ..core.database import Base
 
 class Restaurant(Base):
