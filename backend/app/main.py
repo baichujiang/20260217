@@ -6,6 +6,8 @@ from app.tree.routes import router as tree_router
 from app.points.routes import router as points_router
 from app.users.routes import router as users_router
 from app.watering.routes import router as watering_router
+from app.harvest import models as harvest_models
+from app.harvest.routes import router as harvest_router
 
 from app.core.database import engine, Base  # shared database
 
@@ -14,20 +16,19 @@ app = FastAPI()
 # ✅ CORS: Allow frontend to connect to backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Replace with your frontend URL in production
+    allow_origins=["http://localhost:3000"],  # 写上前端地址
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ✅ Include all API routers
-app.include_router(auth_router)        # /auth/register, /auth/token, etc.
-app.include_router(tree_router)        # /trees/...
-app.include_router(points_router)      # /points/...
-app.include_router(users_router)       # /users/...
-app.include_router(watering_router)    # /watering/...
+app.include_router(auth_router)
+app.include_router(tree_router)
+app.include_router(points_router)
+app.include_router(users_router)
+app.include_router(watering_router)
+app.include_router(harvest_router)
 
-# ✅ Root endpoint
 @app.get("/")
 async def root():
     return {"message": "Welcome to LeafMiles"}

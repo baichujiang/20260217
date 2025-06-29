@@ -13,5 +13,7 @@ class User(Base):
     trees = relationship("Tree", back_populates="user", cascade="all, delete-orphan")
     points = relationship("Point", back_populates="user", cascade="all, delete-orphan")
     watering_logs = relationship("WateringLog", back_populates="user", cascade="all, delete-orphan")
+    rewards = relationship("RewardDelivery", back_populates="user")
 
-
+# app/auth/models.py 末尾加：
+from app.harvest.models import RewardDelivery  # 避免 circular import 但确保 SQLAlchemy 注册到这个类
