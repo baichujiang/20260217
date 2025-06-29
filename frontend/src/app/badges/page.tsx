@@ -45,7 +45,7 @@ export default function BadgesPage() {
   }
 
   return (
-      <div className="min-h-screen bg-gradient-to-b from-green-200 to-white">
+      <div className="min-h-screen bg-[linear-gradient(to_bottom,_#4ade80_30%,_white_40%)]">
         <Header /> {/* ✅ Shared header with back/menu/search */}
 
         <div className="p-6 pt-4">

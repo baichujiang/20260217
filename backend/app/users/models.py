@@ -13,3 +13,4 @@ class User(Base):
     points = relationship("Point", back_populates="user", cascade="all, delete-orphan")
     watering_logs = relationship("WateringLog", back_populates="user", cascade="all, delete-orphan")
     reviews = relationship("Review", back_populates="user", cascade="all, delete-orphan")
+    rewards = relationship("RewardDelivery", back_populates="user")

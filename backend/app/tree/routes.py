@@ -9,46 +9,19 @@ from app.auth.services import get_current_user  # ✅ 导入
 from app.users.models import User
 from typing import List
 from app.watering.schemas import WaterTreeRequest
+from app.tree.schemas import TreeTypeOut
+from app.tree.models import TreeType
+
+
 
 router = APIRouter(prefix="/trees", tags=["Trees"])                  # 路由前缀与标签
 
-
-# 查询所有树种
-@router.get("/types", response_model=list[schemas.TreeTypeOut])
-async def get_tree_types(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(models.TreeType))
-    return result.scalars().all()
-
-# 添加新树种
-@router.post("/types", response_model=schemas.TreeTypeOut)
-async def create_tree_type(data: schemas.TreeTypeCreate, db: AsyncSession = Depends(get_db)):
-    new_type = models.TreeType(**data.dict())
-    db.add(new_type)
-    await db.commit()
-    await db.refresh(new_type)
-    return new_type
-
-# 修改已有树种
-@router.put("/types/{type_id}", response_model=schemas.TreeTypeOut)
-async def update_tree_type(type_id: int, data: schemas.TreeTypeCreate, db: AsyncSession = Depends(get_db)):
-    tree_type = await db.get(models.TreeType, type_id)
-    if not tree_type:
-        raise HTTPException(status_code=404, detail="Tree type not found")
-    for key, value in data.dict().items():
-        setattr(tree_type, key, value)
-    await db.commit()
-    await db.refresh(tree_type)
-    return tree_type
-
-# 删除树种
-@router.delete("/types/{type_id}")
-async def delete_tree_type(type_id: int, db: AsyncSession = Depends(get_db)):
-    tree_type = await db.get(models.TreeType, type_id)
-    if not tree_type:
-        raise HTTPException(status_code=404, detail="Tree type not found")
-    await db.delete(tree_type)
-    await db.commit()
-    return {"message": "Tree type deleted"}
+# 获取所有树的类型（GET /tree-types/）
+@router.get("/types", response_model=List[TreeTypeOut])
+async def list_tree_types(session: AsyncSession = Depends(get_db)):
+    result = await session.execute(select(TreeType))
+    types = result.scalars().all()
+    return types
 
 
 # 种树接口（POST /trees/）
@@ -64,7 +37,7 @@ async def create_tree(
         tree_in=tree_in
     )
 
-
+# 获取当前用户所有树的接口（GET /trees/me）
 @router.get("/me", response_model=List[schemas.Tree])
 async def get_my_trees(
     db: AsyncSession = Depends(get_db),
@@ -88,6 +61,7 @@ async def water_tree(
         amount=data.amount
     )
 
+# 删除树的接口（DELETE /trees/{tree_id}）
 @router.delete("/trees/{tree_id}")
 async def delete_tree(tree_id: int, db: AsyncSession = Depends(get_db)):
     tree = await db.get(models.Tree, tree_id)

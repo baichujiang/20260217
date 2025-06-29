@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from typing import List
 
-from ..auth.models import User
+from ..users.models import User
 from .schemas import UserOut
 from ..core.database import get_db
 
