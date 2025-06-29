@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Header } from "@/components/ui/Header";
 import { HeaderStats } from "@/components/HeaderStats";
 import { Leaderboard } from "@/components/Leaderboard";

@@ -10,12 +10,19 @@ from ..core.config import settings
 
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
-async def authenticate_user(db: AsyncSession, username: str, password: str):
+
+# ✅ New function to check for existing user
+async def get_user_by_username(db: AsyncSession, username: str):
     result = await db.execute(select(models.User).where(models.User.username == username))
-    user = result.scalar_one_or_none()
+    return result.scalar_one_or_none()
+
+
+async def authenticate_user(db: AsyncSession, username: str, password: str):
+    user = await get_user_by_username(db, username)
     if not user or not verify_password(password, user.hashed_password):
         return None
     return user
+
 
 async def create_user(db: AsyncSession, user_data: schemas.UserCreate):
     user = models.User(
@@ -26,6 +33,7 @@ async def create_user(db: AsyncSession, user_data: schemas.UserCreate):
     await db.commit()
     await db.refresh(user)
     return user
+
 
 async def get_current_user(token: str = Depends(oauth2_bearer), db: AsyncSession = Depends(database.get_db)):
     credentials_exception = HTTPException(
@@ -40,8 +48,7 @@ async def get_current_user(token: str = Depends(oauth2_bearer), db: AsyncSession
     except JWTError:
         raise credentials_exception
 
-    result = await db.execute(select(models.User).where(models.User.username == username))
-    user = result.scalar_one_or_none()
+    user = await get_user_by_username(db, username)
     if user is None:
         raise credentials_exception
     return user

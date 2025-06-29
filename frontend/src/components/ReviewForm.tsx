@@ -26,7 +26,7 @@ const handleRating = (category: string, value: number) => {
 
 const toggleTag = (tag: string) => {
     setSelectedTags(prev =>
-    prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+        prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     )
 }
 
@@ -34,28 +34,29 @@ const handleSubmit = async () => {
     setIsSubmitting(true)
 
     const payload = {
-    ratings,
-    experience,
-    sourcingTags: selectedTags,
-    restaurantId: "1", // You can make this dynamic later
+        ratings,
+        experience,
+        sourcingTags: selectedTags,
+        restaurantId: {restaurantId},
     }
 
     try {
-    const res = await fetch("http://localhost:4000/reviews", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-    })
+        // TODO: use real endpoints
+        const res = await fetch("http://localhost:4000/reviews", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        })
 
-    if (res.ok) {
-        toast.success("Review submitted successfully!")
-        // Optionally reset form
-        setRatings({})
-        setExperience("")
-        setSelectedTags([])
-    } else {
-        toast.error("Failed to submit review")
-    }
+        if (res.ok) {
+            toast.success("Review submitted successfully!")
+            // Optionally reset form
+            setRatings({})
+            setExperience("")
+            setSelectedTags([])
+        } else {
+            toast.error("Failed to submit review")
+        }
     } catch (error) {
         toast.error("Network error")
         console.error(error)
@@ -69,11 +70,11 @@ const [restaurantName, setRestaurantName] = useState("")
 useEffect(() => {
     async function fetchRestaurantName() {
         try {
-        const res = await fetch(`http://localhost:4000/restaurants/${restaurantId}`)
-        const data = await res.json()
-        setRestaurantName(data.name)
+            const res = await fetch(`http://localhost:4000/restaurants/${restaurantId}`)
+            const data = await res.json()
+            setRestaurantName(data.name)
         } catch (err) {
-        console.error("Failed to fetch restaurant name", err)
+            console.error("Failed to fetch restaurant name", err)
         }
     }
 
