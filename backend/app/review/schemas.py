@@ -73,3 +73,12 @@ class ReviewRead(ReviewBase):
 
     class Config:
         orm_mode = True
+
+class ReviewCommentRead(BaseModel):
+    review_id: UUID
+    user_name: str
+    created_at: str
+    comment: str
+
+    class Config:
+        orm_mode = True

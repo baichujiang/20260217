@@ -5,7 +5,7 @@ from uuid import UUID
 from typing import List, Optional
 
 from .models import Review, ReviewImage, ReviewTag
-from .schemas import ReviewCreate, ReviewImageCreate, ReviewTagCreate
+from .schemas import ReviewCreate, ReviewImageCreate, ReviewTagCreate, ReviewCommentRead
 
 
 # --- REVIEW CRUD ---
@@ -65,11 +65,36 @@ async def get_reviews_by_restaurant(db: AsyncSession, restaurant_id: int) -> Lis
         .where(Review.restaurant_id == restaurant_id)
         .options(
             selectinload(Review.tags),
-            selectinload(Review.images)
+            selectinload(Review.images),
         )
     )
     result = await db.execute(stmt)
     return result.scalars().all()
+
+
+async def get_comments_by_restaurant(db: AsyncSession, restaurant_id: int) -> List[ReviewCommentRead]:
+    stmt = (
+        select(Review)
+        .where(Review.restaurant_id == restaurant_id)
+        .options(
+            selectinload(Review.tags),
+            selectinload(Review.images),
+            selectinload(Review.user)
+        )
+    )
+    result = await db.execute(stmt)
+    reviews = result.scalars().all()
+
+    comments = [
+        ReviewCommentRead(
+            review_id=review.id,
+            user_name=review.user.username,
+            created_at=review.created_at.date().isoformat(),
+            comment=review.comment or ""
+        )
+        for review in reviews if review.comment
+    ]
+    return comments
 
 
 async def delete_review(db: AsyncSession, review_id: UUID, user_id: int) -> bool:
