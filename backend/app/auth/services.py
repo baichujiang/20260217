@@ -77,3 +77,10 @@ async def get_current_user(
         raise credentials_exception
 
     return user
+
+async def get_current_user_id(
+    token: str = Depends(oauth2_bearer),
+    db: AsyncSession = Depends(database.get_db)
+) -> int:
+    current_user = await get_current_user(token, db)
+    return current_user.id
