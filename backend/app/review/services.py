@@ -54,7 +54,14 @@ async def get_review(db: AsyncSession, review_id: UUID) -> Optional[Review]:
 
 
 async def get_reviews_by_user(db: AsyncSession, user_id: int) -> List[Review]:
-    stmt = select(Review).where(Review.user_id == user_id)
+    stmt = (
+        select(Review)
+        .options(
+            selectinload(Review.tags),
+            selectinload(Review.images)
+        )
+        .where(Review.user_id == user_id)
+    )
     result = await db.execute(stmt)
     return result.scalars().all()
 
