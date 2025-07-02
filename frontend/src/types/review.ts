@@ -1,0 +1,34 @@
+export interface Review {
+    restaurant_id: number;
+    normal_rating: number;
+    food_rating: number;
+    service_rating: number;
+    environment_rating: number;
+    sustainablility_rating: number;
+    sourcing_rating: number;
+    waste_rating: number;
+    menu_rating: number;
+    energy_rating: number;
+    comment: string;
+    tag_ids: number[];
+    // images: string[];
+}
+
+export interface ReviewFormProps {
+    restaurant_id: number;
+    restaurant_name: string;
+    tags: Tag[];
+}
+
+export interface Tag {
+    id: number;
+    name: string;
+    category: string;
+}
+
+export interface Comment {
+    review_id: string;
+    user_name: string;
+    comment: string;
+    created_at: string;
+}
