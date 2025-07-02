@@ -14,7 +14,7 @@ router = APIRouter(
     tags=["users"]
 )
 
-@router.get("/", response_model=List[UserOut])
+@router.get("/", summary="Get All Users", response_model=List[UserOut])
 async def get_users(db: AsyncSession = Depends(get_db)):
     """
     获取所有用户及其当前积分（排行榜）。
@@ -35,7 +35,7 @@ async def get_users(db: AsyncSession = Depends(get_db)):
         ))
     return leaderboard
 
-@router.get("/{user_id}", response_model=UserOut)
+@router.get("/{user_id}", summary="Get A Single User", response_model=UserOut)
 async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
     """
     获取单个用户及其当前积分余额。

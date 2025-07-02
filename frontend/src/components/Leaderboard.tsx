@@ -21,7 +21,7 @@ export const Leaderboard: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:8000/watering/leaderboard?period=${period}`);
+      const res = await fetch(`http://localhost:8000/trees/leaderboard?period=${period}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
       const data: LeaderboardEntry[] = await res.json();
       setEntries(data);

@@ -9,8 +9,6 @@ from app.users.models import User
 from app.watering.models import WateringLog  
 from app.points.models import Point
 
-
-
 async def list_tree_types():
     async with async_session_maker() as session:
         result = await session.execute(select(TreeType))
