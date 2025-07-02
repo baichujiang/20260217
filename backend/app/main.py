@@ -16,6 +16,16 @@ from app.points.routes import router as points_router
 from app.users.routes import router as users_router
 from app.harvest.routes import router as harvest_router
 from app.badges.routes import router as badges_router
+from .scripts.migrate_review_tags import migrate_review_tags
+
+from .restaurant.routes import router as restaurant_router
+from .auth.routes import router as auth_router
+from .tree.routes import router as tree_router
+from .points.routes import router as points_router
+from .users.routes import router as users_router
+from .harvest.routes import router as harvest_router
+from .review.routes import router as review_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,6 +37,8 @@ async def lifespan(app: FastAPI):
     await migrate_tree_types()
     print("[Startup] Migrating badge definitions...")         # ✅ 添加这两行
     await migrate_badge_definitions()   
+    print("[Startup] Migrating review tags...")
+    await migrate_review_tags()
 
     yield
 
@@ -49,6 +61,7 @@ app.include_router(users_router)
 app.include_router(harvest_router)
 app.include_router(restaurant_router)
 app.include_router(badges_router)
+app.include_router(review_router)
 
 @app.get("/")
 async def root():

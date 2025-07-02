@@ -1,0 +1,17 @@
+id,name,category
+1,Local ingredients,Sourcing
+2,Organic produce,Sourcing
+3,Seasonal menu,Sourcing
+4,Source labeling,Sourcing
+5,Farm partnerships,Sourcing
+6,Reusable packaging,Waste
+7,No single-use plastics,Waste
+8,Paperless receipts,Waste
+9,Food donations,Waste
+10,Vegetarian options,Menu
+11,Vegan options,Menu
+12,Gluten-free options,Menu
+13,Balanced portion sizes,Menu
+14,Seasonal rotation,Menu
+15,Natural lighting,Energy
+16,Green energy use advertised,Energy

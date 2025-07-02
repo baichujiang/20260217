@@ -63,7 +63,7 @@ export default function ImageScrollSection() {
         <div className="mt-10 px-4 overflow-x-auto whitespace-nowrap scroll-smooth snap-x snap-mandatory z-10">
             <div className="flex space-x-4">
                 {restaurantData.map((restaurant) => (
-                    <Link href={`/rating?id=${restaurant.id}`} key={restaurant.id}>
+                    <Link href={`/restaurant-detail?id=${restaurant.id}`} key={restaurant.id}>
                         <motion.div
                             className="min-w-[200px] snap-start shadow-lg rounded-xl overflow-hidden cursor-pointer"
                             whileHover={{ scale: 1.05 }}
