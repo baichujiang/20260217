@@ -1,0 +1,10 @@
+badge_type,level,name,description,required_progress,icon,category
+watering,1,Little Waterer,Water 10 times,10,/badges/water1.png,Watering
+watering,2,Steady Stream,Water 100 times,100,/badges/water2.png,Watering
+watering,3,Flood Master,Water 1000 times,1000,/badges/water3.png,Watering
+grower,1,Seed Sower,Harvest 5 trees,5,/badges/grow1.png,Growth
+grower,2,Tree Whisperer,Harvest 20 trees,20,/badges/grow2.png,Growth
+grower,3,Forest Guardian,Harvest 100 trees,100,/badges/grow3.png,Growth
+streak,1,Daily Newbie,Check in 3 days in a row,3,/badges/streak1.png,Daily Streak
+streak,2,Habit Builder,Check in 7 days in a row,7,/badges/streak2.png,Daily Streak
+streak,3,Unstoppable,Check in 30 days in a row,30,/badges/streak3.png,Daily Streak

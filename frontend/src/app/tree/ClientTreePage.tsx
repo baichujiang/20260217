@@ -40,6 +40,8 @@ export default function ClientTreePage() {
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [selectedTreeId, setSelectedTreeId] = useState<number | null>(null);
   const [isPouring, setIsPouring] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
 
   useEffect(() => {
     fetchWithAuth(`http://localhost:8000/trees/me`)
@@ -119,7 +121,7 @@ export default function ClientTreePage() {
     if (selectedTreeId === null) return;
     try {
       const res = await fetchWithAuth(
-        `http://localhost:8000/trees/${selectedTreeId}/harvest`,
+        `http://localhost:8000/harvest/${selectedTreeId}`,
         {
           method: "POST",
           body: JSON.stringify(data),
@@ -130,6 +132,7 @@ export default function ClientTreePage() {
       setTrees(prev => prev.map(tree => (tree.id === updated.id ? updated : tree)));
       setShowRewardModal(false);
       setSelectedTreeId(null);
+      setSuccessMessage("Harvest success! The gift will be delivered within a few days");
     } catch (e) {
       console.error(e);
       alert("Failed to submit reward address");
@@ -210,11 +213,11 @@ export default function ClientTreePage() {
                       </div>
                       <div className="relative w-full px-4">
                         {growth_value >= max && (
-                          <div className="absolute -top-12 right-0 flex items-center gap-2 animate-bounce">
+                          <div className="absolute -top-12 right-4 flex items-center gap-0 animate-bounce">
                             <Image src="/fruit.png" alt="Fruit" width={64} height={64} />
                             <button
                               onClick={() => openHarvestModal(id)}
-                              className="text-md bg-yellow-300 rounded px-2 py-1 font-semibold text-white"
+                              className="text-md bg-yellow-400 rounded px-1 py-1 font-semibold text-white"
                             >
                               Harvest
                             </button>

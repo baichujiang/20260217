@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from ..core.database import Base
+from datetime import datetime
 
 class User(Base):
     __tablename__ = "users"
@@ -14,3 +15,4 @@ class User(Base):
     watering_logs = relationship("WateringLog", back_populates="user", cascade="all, delete-orphan")
     reviews = relationship("Review", back_populates="user", cascade="all, delete-orphan")
     rewards = relationship("RewardDelivery", back_populates="user")
+    badges = relationship("UserBadge", back_populates="user", cascade="all, delete")
