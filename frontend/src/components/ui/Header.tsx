@@ -10,7 +10,14 @@ import {
     DrawerTrigger,
     DrawerContent,
 } from "@/components/ui/drawer"
-import { Search, ArrowLeft } from "lucide-react" // ✅ Back icon
+import {
+    Search,
+    ArrowLeft,
+    UserCircle,
+    Bed,
+    Utensils,
+    LocateFixed,
+} from "lucide-react"
 
 export function Header() {
     const [showSearchInput, setShowSearchInput] = useState(false)
@@ -30,13 +37,28 @@ export function Header() {
                                     ☰
                                 </Button>
                             </DrawerTrigger>
-                            <DrawerContent
-                                className="h-full w-64 bg-white shadow-lg rounded-none p-4 fixed top-0 left-0"
-                            >
+
+                            <DrawerContent className="h-full w-64 bg-white shadow-lg rounded-none p-4 fixed top-0 left-0">
                                 <div className="space-y-4 mt-8">
-                                    <Button variant="ghost" className="w-full justify-start">🏨 Hotel</Button>
-                                    <Button variant="ghost" className="w-full justify-start">🍽️ Restaurant</Button>
-                                    <Button variant="ghost" className="w-full justify-start">📍 Tourist Spot</Button>
+                                    <Link href="/account" className="w-full">
+                                        <Button variant="ghost" className="w-full justify-start gap-2">
+                                            <UserCircle className="w-5 h-5" />
+                                            Account
+                                        </Button>
+                                    </Link>
+                                    <Link href="/hotel" className="w-full">
+                                        <Button variant="ghost" className="w-full justify-start gap-2">
+                                            <Bed className="w-5 h-5" />
+                                            Hotel
+                                        </Button>
+                                    </Link>
+                                    <Link href="/restaurant" className="w-full">
+                                        <Button variant="ghost" className="w-full justify-start gap-2">
+                                            <Utensils className="w-5 h-5" />
+                                            Restaurant
+                                        </Button>
+                                    </Link>
+
                                 </div>
                             </DrawerContent>
                         </Drawer>
@@ -52,14 +74,19 @@ export function Header() {
                         </Button>
                     </div>
 
-                    {/* Center: Logos */}
+                    {/* Center: Logo */}
                     <Link href="/" className="shrink-0">
                         <div className="flex items-center space-x-2">
-                            <Image src="/LeafMilesLogo.png" alt="LEAFMIILES Logo" width={40} height={40} />
+                            <Image
+                                src="/LeafMilesLogo.png"
+                                alt="LEAFMILES Logo"
+                                width={40}
+                                height={40}
+                            />
                         </div>
                     </Link>
 
-                    {/* Right: Search Icon */}
+                    {/* Right: Search */}
                     <Button
                         variant="outline"
                         onClick={() => setShowSearchInput(prev => !prev)}
@@ -69,7 +96,7 @@ export function Header() {
                     </Button>
                 </div>
 
-                {/* Search Input Field (toggle) */}
+                {/* Search Input */}
                 {showSearchInput && (
                     <div className="bg-white px-6 pb-2">
                         <input

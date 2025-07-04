@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class UserCreate(BaseModel):
     username: str
@@ -7,6 +8,7 @@ class UserCreate(BaseModel):
 class UserRead(BaseModel):
     id: int
     username: str
+    avatar_url: Optional[str] = None
 
     class Config:
         from_attributes = True  # ✅ use this instead of orm_mode in Pydantic v2
