@@ -102,19 +102,22 @@ export default function BadgesPage() {
                           ? `${badge.currentProgress} / ${badge.requiredProgress}`
                           : "Locked 🔒"}
                       </div>
-                      {badge.currentProgress > 0 && !badge.unlocked && (
+                      {badge.currentProgress > 0 && (
                         <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-green-500 h-2 rounded-full"
+                            <div
+                            className={`h-2 rounded-full ${
+                                badge.unlocked ? "bg-yellow-400" : "bg-green-500"
+                            }`}
                             style={{
-                              width: `${Math.min(
+                                width: `${Math.min(
                                 100,
                                 (badge.currentProgress / badge.requiredProgress) * 100
-                              )}%`,
+                                )}%`,
                             }}
-                          />
+                            />
                         </div>
-                      )}
+                        )}
+
                     </div>
                   ))}
                 </div>

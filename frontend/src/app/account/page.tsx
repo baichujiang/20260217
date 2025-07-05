@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/Header";
@@ -15,13 +15,15 @@ export default function AccountPage() {
     });
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get("redirect") || "/account/profile";
 
     // 🚀 Check if already logged in
     useEffect(() => {
         if (typeof window !== "undefined") {
             const token = localStorage.getItem("token");
             if (token) {
-                router.push("/account/profile");
+                router.push(redirect);
             }
         }
     }, [router]);
@@ -57,7 +59,7 @@ export default function AccountPage() {
             setMessage("✅ Logged in successfully!");
 
             // 🚀 Immediately navigate to profile
-            router.push("/account/profile");
+            router.push(redirect);
         } catch (err: any) {
             console.error("❌ Login error:", err);
             if (err.response) {

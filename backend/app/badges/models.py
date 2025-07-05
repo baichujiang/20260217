@@ -7,10 +7,10 @@ class UserBadge(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    badge_type = Column(String, nullable=False)   # e.g., "watering", "grower"
-    level = Column(Integer, nullable=False)       # 1, 2, 3
-    progress = Column(Integer, default=0)         # 当前进度
-    max_progress = Column(Integer)                # 达到这个值即升级
+    badge_type = Column(String, nullable=False)   # e.g., "watering", "harvest", "reviewer"
+    level = Column(Integer, nullable=False)       # Level 1, 2, 3
+    progress = Column(Integer, default=0)         # 当前进度（由后端动态更新）
+    max_progress = Column(Integer)                # 达到此进度即解锁该等级
 
     user = relationship("User", back_populates="badges")
     definition = relationship(
@@ -25,10 +25,10 @@ class BadgeDefinition(Base):
     __tablename__ = "badge_definitions"
 
     id = Column(Integer, primary_key=True, index=True)
-    badge_type = Column(String, nullable=False)         # e.g., watering, grower, streak
-    level = Column(Integer, nullable=False)             # e.g., 1, 2, 3
-    required_progress = Column(Integer, nullable=False) # e.g., 10, 100, 1000
-    name = Column(String, nullable=False)               # Badge name to show
-    description = Column(String, nullable=True)         # Optional tooltip text
-    icon = Column(String, nullable=True)                # Badge icon path
-    category = Column(String, nullable=False)           # e.g., "Growth", "Activity"
+    badge_type = Column(String, nullable=False)         # e.g., watering, harvest, reviewer
+    level = Column(Integer, nullable=False)             # Level 1, 2, 3
+    required_progress = Column(Integer, nullable=False) # 达到该值后解锁
+    name = Column(String, nullable=False)               # 显示的徽章名称
+    description = Column(String, nullable=True)         # 可选描述
+    icon = Column(String, nullable=True)                # 显示图标路径
+    category = Column(String, nullable=False)           # 前端分组显示用途，例如 "Activity", "Growth"
