@@ -10,6 +10,9 @@ import { Comment } from "@/types/review"
 import { TopTag } from '@/types/restaurant';
 
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+
 export default function RestaurantDetailPageContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
@@ -26,9 +29,9 @@ useEffect(() => {
     const fetchData = async () => {
       try {
         const [restaurantRes, commentsRes, tagsRes] = await Promise.all([
-          fetch(`http://localhost:8000/restaurants/${id}`),
-          fetch(`http://localhost:8000/reviews/restaurant/${id}/comments`),
-          fetch(`http://localhost:8000/restaurants/${id}/top-tags`)
+          fetch(`${API_BASE_URL}/restaurants/${id}`),
+          fetch(`${API_BASE_URL}/reviews/restaurant/${id}/comments`),
+          fetch(`${API_BASE_URL}/restaurants/${id}/top-tags`)
         ]);
 
         if (!restaurantRes.ok || !commentsRes.ok || !tagsRes.ok) {

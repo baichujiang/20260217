@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Star } from "lucide-react"
+import { Star, X } from "lucide-react"
 import clsx from "clsx"
 import { toast } from "sonner"
 import { Review, ReviewFormProps, Tag } from "@/types/review"
 
 const categories = ["General", "Food", "Service", "Environment", "Sourcing", "Waste", "Menu", "Energy"]
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 
 export default function ReviewForm({ 
@@ -16,78 +17,128 @@ export default function ReviewForm({
     restaurant_name,
     tags
 }: ReviewFormProps) {
-    const [ratings, setRatings] = useState<Record<string, number>>({});
-    const [experience, setExperience] = useState("");
-    const [selectedTags, setSelectedTags] = useState<number[]>([]);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ratings, setRatings] = useState<Record<string, number>>({});
+  const [experience, setExperience] = useState("");
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-    const handleRating = (category: string, value: number) => {
-        setRatings((prev) => ({ ...prev, [category]: value }));
-    };
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    
+    for (const file of files) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast("Please select image files only.");
+        continue;
+      }
 
-    const toggleTag = (tagId: number) => {
-        setSelectedTags((prev) =>
-            prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
-        );
-    };
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast("Please select images smaller than 10MB.");
+        continue;
+      }
 
-    const handleSubmit = async () => {
-        // Check that all required ratings are filled and not 0
-        for (const category of categories) {
-            if (!ratings[category] || ratings[category] < 1) {
-                toast(`Please provide a rating for ${category}`);
-                return;
-            }
-        }
+      // Add valid file
+      setSelectedImages(prev => [...prev, file]);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreviews(prev => [...prev, e.target?.result as string]);
+      };
+      reader.readAsDataURL(file);
+    }
 
-        setIsSubmitting(true);
+    // Reset input value to allow selecting the same file again
+    event.target.value = '';
+};
 
-        const payload: Review = {
-            normal_rating: ratings["General"] || 0,
-            food_rating: ratings["Food"] || 0,
-            service_rating: ratings["Service"] || 0,
-            environment_rating: ratings["Environment"] || 0,
-            sustainablility_rating: ratings["Sustainability"] || 0,
-            sourcing_rating: ratings["Sourcing"] || 0,
-            waste_rating: ratings["Waste"] || 0,
-            menu_rating: ratings["Menu"] || 0,
-            energy_rating: ratings["Energy"] || 0,
-            comment: experience,
-            tag_ids: selectedTags,
-            restaurant_id,
-        };
+const removeImage = (index: number) => {
+  setSelectedImages(prev => prev.filter((_, i) => i !== index));
+  setImagePreviews(prev => prev.filter((_, i) => i !== index));
+};
 
-        const token = localStorage.getItem("token");
+const handleRating = (category: string, value: number) => {
+    setRatings((prev) => ({ ...prev, [category]: value }));
+};
 
-        try {
-            const res = await fetch("http://localhost:8000/reviews/", {
-                method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                  },
-                body: JSON.stringify(payload),
-            });
+const toggleTag = (tagId: number) => {
+    setSelectedTags((prev) =>
+        prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+    );
+};
 
-            if (!res.ok) throw new Error("Failed to submit review");
+const handleSubmit = async () => {
+  for (const category of categories) {
+    if (!ratings[category] || ratings[category] < 1) {
+      toast(`Please provide a rating for ${category}`);
+      return;
+    }
+  }
 
-            toast("Review submitted successfully!");
-            setRatings({});
-            setExperience("");
-            setSelectedTags([]);
-        } catch (error) {
-            toast("Failed to submit review");
-            console.error(error);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+  setIsSubmitting(true);
 
-    const tagGroups = tags.reduce<Record<string, Tag[]>>((acc, tag) => {
-        acc[tag.category] = acc[tag.category] || [];
-        acc[tag.category].push(tag);
-        return acc;
-    }, {});
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+
+  // Append all rating fields
+  formData.append("normal_rating", String(ratings["General"] || 0));
+  formData.append("food_rating", String(ratings["Food"] || 0));
+  formData.append("service_rating", String(ratings["Service"] || 0));
+  formData.append("environment_rating", String(ratings["Environment"] || 0));
+  formData.append("sustainablility_rating", String(ratings["Sustainability"] || 0));
+  formData.append("sourcing_rating", String(ratings["Sourcing"] || 0));
+  formData.append("waste_rating", String(ratings["Waste"] || 0));
+  formData.append("menu_rating", String(ratings["Menu"] || 0));
+  formData.append("energy_rating", String(ratings["Energy"] || 0));
+
+  formData.append("comment", experience);
+  formData.append("restaurant_id", String(restaurant_id));
+  formData.append("tag_ids", JSON.stringify(selectedTags)); // Send as JSON string
+
+  selectedImages.forEach((image) => {
+    formData.append("files", image);
+  });
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/reviews/`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(errorText || "Failed to submit review");
+    }
+
+    const data = await res.json(); // Full ReviewRead object
+
+    toast("Review submitted successfully!");
+    setRatings({});
+    setExperience("");
+    setSelectedTags([]);
+    setSelectedImages([]);
+    setImagePreviews([]);
+    console.log("Review response:", data);
+  } catch (error) {
+    toast("Failed to submit review");
+    console.error(error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+const tagGroups = tags.reduce<Record<string, Tag[]>>((acc, tag) => {
+    acc[tag.category] = acc[tag.category] || [];
+    acc[tag.category].push(tag);
+    return acc;
+}, {});
 
 
     return (
@@ -125,6 +176,51 @@ export default function ReviewForm({
         onChange={(e) => setExperience(e.target.value)}
         className="min-h-[100px]"
       />
+
+      {/* Upload Images*/}
+      <input
+        type="file"
+        accept="image/*"
+        multiple
+        style={{ display: "none" }}
+        id="image-upload-input"
+        onChange={handleImageSelect}
+      />
+      <Button
+        className="w-full"
+        type="button"
+        onClick={() => {
+          const input = document.getElementById("image-upload-input") as HTMLInputElement;
+          input?.click();
+        }}
+      >Add photos</Button>
+
+      {/* Image Previews - Horizontal Scroll */}
+      {imagePreviews.length > 0 && (
+        <div className="space-y-2">
+          <span className="text-sm text-muted-foreground">{imagePreviews.length} photo(s) selected</span>
+          <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+            {imagePreviews.map((preview, index) => (
+              <div key={index} className="relative flex-shrink-0">
+                <img
+                  src={preview}
+                  alt={`Preview ${index + 1}`}
+                  className="w-20 h-20 object-cover rounded-lg border"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => removeImage(index)}
+                  className="absolute top-1 right-1 h-6 w-6 rounded-full bg-white text-black shadow-md"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Tag Groups */}
       {Object.entries(tagGroups).map(([category, groupTags]) => (

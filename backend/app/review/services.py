@@ -1,11 +1,16 @@
+import os
+import shutil
+import uuid
+from fastapi import HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from uuid import UUID
 from typing import List, Optional
 
 from .models import Review, ReviewImage, ReviewTag
-from .schemas import ReviewCreate, ReviewImageCreate, ReviewTagCreate, ReviewCommentRead
+from .schemas import ReviewCreate, ReviewImageRead, ReviewTagCreate, ReviewCommentRead
+from .utils import build_image_response
 
 
 # --- REVIEW CRUD ---
@@ -32,7 +37,7 @@ async def create_review(db: AsyncSession, data: ReviewCreate, user_id: int) -> R
         review.tags.extend(tags)
 
     db.add(review)
-    await db.commit()
+    await db.flush()
 
     stmt = (
         select(Review)
@@ -79,28 +84,34 @@ async def get_reviews_by_restaurant(db: AsyncSession, restaurant_id: int) -> Lis
     return result.scalars().all()
 
 
-async def get_comments_by_restaurant(db: AsyncSession, restaurant_id: int) -> List[ReviewCommentRead]:
+async def get_comments_by_restaurant(
+    db: AsyncSession, restaurant_id: int, request: Request
+) -> List[ReviewCommentRead]:
     stmt = (
         select(Review)
         .where(Review.restaurant_id == restaurant_id)
         .options(
             selectinload(Review.tags),
             selectinload(Review.images),
-            selectinload(Review.user)
+            selectinload(Review.user),
         )
     )
     result = await db.execute(stmt)
     reviews = result.scalars().all()
 
-    comments = [
-        ReviewCommentRead(
+    comments = []
+    for review in reviews:
+        if not review.comment:
+            continue
+        comment = ReviewCommentRead(
             review_id=review.id,
             user_name=review.user.username,
             created_at=review.created_at.date().isoformat(),
-            comment=review.comment or ""
+            comment=review.comment,
+            images=[ReviewImageRead(**build_image_response(img, request)) for img in review.images],
         )
-        for review in reviews if review.comment
-    ]
+        comments.append(comment)
+
     return comments
 
 
@@ -134,15 +145,61 @@ async def get_all_review_tags(db: AsyncSession) -> List[ReviewTag]:
 
 
 # --- REVIEW IMAGE SERVICES ---
-async def create_review_image(db: AsyncSession, data: ReviewImageCreate) -> ReviewImage:
-    image = ReviewImage(review_id=data.review_id, file_path=data.file_path)
-    db.add(image)
-    await db.commit()
-    await db.refresh(image)
-    return image
+UPLOAD_DIR = "uploads/review_images"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
-async def get_images_by_review(db: AsyncSession, review_id: UUID) -> List[ReviewImage]:
-    stmt = select(ReviewImage).where(ReviewImage.review_id == review_id)
+async def save_and_create_review_image(session: AsyncSession, review_id: UUID, file) -> ReviewImage:
+    # Generate safe unique filename
+    ext = file.filename.split(".")[-1]
+    image_id = uuid.uuid4()
+    filename = f"{review_id}_{image_id}.{ext}"
+    file_path = os.path.join(UPLOAD_DIR, filename)
+    try:
+        # Save the image to disk
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # Create and commit DB record
+        new_image = ReviewImage(id=image_id, review_id=review_id, file_path=file_path)
+        session.add(new_image)
+        await session.flush()
+        await session.refresh(new_image)
+
+        return new_image
+    
+    except Exception as e:
+        if os.path.exists(file_path):
+                os.remove(file_path)
+        raise HTTPException(status_code=500, detail="Failed to store image. " + str(e))
+
+
+async def get_review_images_by_restaurant(db: AsyncSession, restaurant_id: int) -> List[ReviewImage]:
+    stmt = (
+        select(Review)
+        .where(Review.restaurant_id == restaurant_id)
+        .options(selectinload(Review.images))
+    )
     result = await db.execute(stmt)
-    return result.scalars().all()
+    reviews = result.scalars().all()
+
+    all_images = []
+    for review in reviews:
+        all_images.extend(review.images)
+
+    return all_images
+
+
+async def get_review_images_by_review(db: AsyncSession, review_id: UUID) -> List[ReviewImage]:
+    stmt = (
+        select(Review)
+        .where(Review.id == review_id)
+        .options(selectinload(Review.images))
+    )
+    result = await db.execute(stmt)
+    review = result.scalar_one_or_none()
+    
+    if review is None:
+        return []
+    
+    return review.images
