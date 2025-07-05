@@ -21,12 +21,27 @@ export default function AccountPage() {
     // 🚀 Check if already logged in
     useEffect(() => {
         if (typeof window !== "undefined") {
-            const token = localStorage.getItem("token");
-            if (token) {
+          const token = localStorage.getItem("token");
+          if (!token) return;
+    
+          // Verify if token is still valid
+          fetch("http://localhost:8000/users/me", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then((res) => {
+              if (res.ok) {
                 router.push(redirect);
-            }
+              } else {
+                localStorage.removeItem("token");
+                setMessage("Your login session has expired. Please sign in again to continue.");
+              }
+            })
+            .catch(() => {
+              localStorage.removeItem("token");
+              setMessage("Failed to verify login status. Please log in again.");
+            });
         }
-    }, [router]);
+      }, [router, redirect]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

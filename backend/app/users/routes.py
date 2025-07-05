@@ -15,6 +15,31 @@ router = APIRouter(
     tags=["users"]
 )
 
+
+@router.get("/me", summary="Get Current User Info", response_model=UserOut)
+async def get_current_user_info(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    获取当前登录用户的基本信息和总积分。
+    """
+    result = await db.execute(
+        select(User)
+        .where(User.id == current_user.id)
+        .options(selectinload(User.points))  # ✅ 预加载 points，避免懒加载
+    )
+    user = result.scalar_one()
+
+    total = sum(p.amount for p in user.points) if user.points else 0
+
+    return UserOut(
+        id=user.id,
+        username=user.username,
+        total_points=total
+    )
+
+
 @router.get("/", summary="Get All Users", response_model=List[UserOut])
 async def get_users(db: AsyncSession = Depends(get_db)):
     """
@@ -57,20 +82,3 @@ async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
         total_points=total
     )
 
-
-# ✅ 新增：获取当前用户 /users/me
-@router.get("/me", summary="Get Current User Info", response_model=UserOut)
-async def get_current_user_info(
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    """
-    获取当前登录用户的基本信息和总积分。
-    """
-    await db.refresh(current_user)  # 刷新以确保 points 是最新的
-    total = sum(p.amount for p in current_user.points) if current_user.points else 0
-    return UserOut(
-        id=current_user.id,
-        username=current_user.username,
-        total_points=total
-    )
