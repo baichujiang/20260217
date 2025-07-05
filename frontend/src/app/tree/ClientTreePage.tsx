@@ -43,7 +43,19 @@ export default function ClientTreePage() {
   const [isPouring, setIsPouring] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
+  const [badges, setBadges] = useState<number>(0);
 
+  useEffect(() => {
+    fetchWithAuth("http://localhost:8000/badges/my")
+      .then((res) => res.json())
+      .then((data) => {
+        const unlocked = data.filter((b: any) => b.unlocked).length;
+        setBadges(unlocked);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch badges", err);
+      });
+  }, []);
 
   useEffect(() => {
     fetchWithAuth(`http://localhost:8000/trees/me`)
@@ -134,7 +146,8 @@ export default function ClientTreePage() {
       setTrees(prev => prev.map(tree => (tree.id === updated.id ? updated : tree)));
       setShowRewardModal(false);
       setSelectedTreeId(null);
-      setSuccessMessage("Harvest success! The gift will be delivered within a few days");
+      setSuccessMessage("🎉 Harvest success! The gift will be delivered within a few days");
+      setTimeout(() => setSuccessMessage(null), 8000);
     } catch (e) {
       console.error(e);
       alert("Failed to submit reward address");
@@ -154,16 +167,22 @@ export default function ClientTreePage() {
       <Suspense fallback={null}>
         <SearchParamHandler onCreate={handleCreateTree} />
       </Suspense>
-  
+
       <Header />
+      <button
+        onClick={() => router.push("/myrewards")}
+        className="fixed top-40 left-8 z-50 bg-yellow-400 text-white text-sm font-semibold px-4 py-2 rounded-md shadow hover:bg-yellow-500 transition"
+      >
+        🎁 My Rewards
+      </button>
+      
       <section className="relative">
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
         <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
         <div className="p-4 pb-0">
-            <HeaderStats badges={10} greenPoints={greenPoints} avatarUrl="/avatar-default.svg" />
-            </div> 
-
-            {trees.length === 0 ? (
+          <HeaderStats badges={badges} greenPoints={greenPoints} avatarUrl="/avatar-default.svg" />
+        </div>
+        {trees.length === 0 ? (
                 <div className="flex flex-col items-center justify-center text-center mt-24 px-4 relative">
                 {/* 灰色树苗图 */}
                 <Image
@@ -280,14 +299,30 @@ export default function ClientTreePage() {
             </div>
         )}
       </section>
-  
+
       <div className="-mt-6 px-4" />
       <Leaderboard />
-  
+
       <RewardModal
         open={showRewardModal}
         onClose={() => setShowRewardModal(false)}
         onSubmit={handleHarvestSubmit}
       />
+
+      {successMessage && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-4 animate-fade-in-out z-50">
+          <span>{successMessage}</span>
+          <button
+            onClick={() => {
+              setSuccessMessage(null);
+              router.push("/myrewards");
+            }}
+            className="bg-white text-green-700 font-semibold text-sm px-3 py-1 rounded-md hover:bg-gray-100 transition"
+          >
+            My Rewards
+          </button>
+        </div>
+      )}
     </div>
-  )};
+  );
+}

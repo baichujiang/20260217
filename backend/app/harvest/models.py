@@ -21,6 +21,8 @@ class RewardDelivery(Base):
     state = Column(String, nullable=True)
     phone_number = Column(String, nullable=False)
 
+    gift_type = Column(String, nullable=False)
+
     submitted_at = Column(DateTime, default=datetime.utcnow)
 
     # 可选的关系字段（如果你后面需要联表查询）

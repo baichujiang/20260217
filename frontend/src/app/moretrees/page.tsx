@@ -20,6 +20,7 @@ export default function MoreTreesPage() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchTreeTypes = async () => {
@@ -62,7 +63,7 @@ export default function MoreTreesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(to_bottom,_#bbf7d0_30%,_white_40%)]">
+    <div className="min-h-screen bg-[linear-gradient(to_bottom,_#f0fdf4_35%,_white_40%)]">
       <Header />
       <div className="p-6 pt-4">
         <h1 className="text-3xl font-bold text-center mb-8">
@@ -78,9 +79,17 @@ export default function MoreTreesPage() {
             {options.map((t) => (
               <Card
                 key={t.id}
-                className="p-4 bg-white/80 rounded-lg cursor-pointer hover:ring-2 hover:ring-green-500 transition"
-                onClick={() => handleCreateTree(t.id)}
+                className={`p-4 rounded-xl cursor-pointer shadow-md transition duration-150 ${
+                  selectedId === t.id
+                    ? "border-2 border-green-600 bg-green-50"
+                    : "border border-gray-200 bg-white/80 hover:ring-2 hover:ring-green-300"
+                }`}
+                onClick={() => {
+                  setSelectedId(t.id);
+                  handleCreateTree(t.id);
+                }}
               >
+
                 <div className="relative w-full h-40 mb-4">
                   <Image
                     src={t.image_src || "/fallback.png"}
