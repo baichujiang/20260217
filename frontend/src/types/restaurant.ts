@@ -10,3 +10,9 @@ export interface Restaurant {
   menu_score: number | null | undefined
   energy_score: number | null | undefined
 }
+
+export interface TopTag {
+    name: string;
+    category: string;
+    count: number;
+}

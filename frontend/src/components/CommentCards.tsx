@@ -9,30 +9,44 @@ import {
 } from '@/components/ui/card'
 import { Toggle } from "@/components/ui/toggle"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {Comment} from "@/types/review"
+import { Comment } from "@/types/review"
+import { TopTag } from "@/types/restaurant"
 
 
 interface CommentCardsProps {
+  tags: TopTag[];
   comments: Comment[];
 }
 
-export default function CommentCards({ comments }:CommentCardsProps) {
-
+export default function CommentCards({ comments, tags }: CommentCardsProps) {
   return (
     <main>
-      <div className="flex flex-wrap gap-2 w-screen px-6">
-        <Toggle variant="outline" className='rounded-3xl'>Local Supplier</Toggle>
-        <Toggle variant="outline" className='rounded-3xl'>Seasonal Menu</Toggle>
-        <Toggle variant="outline" className='rounded-3xl'>Vegan</Toggle>
-        <Toggle variant="outline" className='rounded-3xl'>Reusable Takeaway Box</Toggle>
+      {/* Tag toggles */}
+      <div className="flex flex-wrap gap-2 w-screen px-6 py-4">
+        {tags.map((tag) => (
+          <Toggle
+            key={tag.name}
+            variant="outline"
+            className="rounded-3xl text-sm"
+          >
+            {tag.name}
+          </Toggle>
+        ))}
       </div>
+
+      {/* Review cards */}
       <div className="flex flex-col divide-y divide-gray-200">
-        {comments.map(comment => (
-          <Card key={comment.review_id} className='w-screen flex flex-col justify-between border-none shadow-none'>
+        {comments.map((comment) => (
+          <Card
+            key={comment.review_id}
+            className="w-screen flex flex-col justify-between border-none shadow-none"
+          >
             <CardHeader className="flex flex-row gap-4 items-center">
               <Avatar>
                 <AvatarImage src="/avatar-default.svg" alt="default-avatar" />
-                <AvatarFallback>{comment.user_name.slice(0, 2)}</AvatarFallback>
+                <AvatarFallback>
+                  {comment.user_name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div>
                 <CardTitle>{comment.user_name}</CardTitle>

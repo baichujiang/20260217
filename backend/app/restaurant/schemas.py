@@ -27,3 +27,8 @@ class RestaurantOut(RestaurantBase):
 
     class Config:
         orm_mode = True
+
+class TopTagOut(BaseModel):
+    name: str
+    category: str
+    count: int

@@ -57,10 +57,15 @@ export default function ReviewForm({
             restaurant_id,
         };
 
+        const token = localStorage.getItem("token");
+
         try {
             const res = await fetch("http://localhost:8000/reviews/", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                  },
                 body: JSON.stringify(payload),
             });
 

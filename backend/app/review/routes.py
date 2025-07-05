@@ -13,7 +13,7 @@ from ..core.database import get_db
 
 router = APIRouter(prefix="/reviews", tags=["Reviews"])
 
-@router.post("", response_model=ReviewRead, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ReviewRead, status_code=status.HTTP_201_CREATED)
 async def create_review_route(
     review_data: ReviewCreate,
     user_id: int = Depends(get_current_user_id),
