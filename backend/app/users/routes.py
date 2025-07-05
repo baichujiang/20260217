@@ -8,6 +8,7 @@ from typing import List
 from ..users.models import User
 from .schemas import UserOut
 from ..core.database import get_db
+from ..auth.services import get_current_user
 
 router = APIRouter(
     prefix="/users",
@@ -53,5 +54,23 @@ async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
     return UserOut(
         id=user.id,
         username=user.username,
+        total_points=total
+    )
+
+
+# ✅ 新增：获取当前用户 /users/me
+@router.get("/me", summary="Get Current User Info", response_model=UserOut)
+async def get_current_user_info(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    获取当前登录用户的基本信息和总积分。
+    """
+    await db.refresh(current_user)  # 刷新以确保 points 是最新的
+    total = sum(p.amount for p in current_user.points) if current_user.points else 0
+    return UserOut(
+        id=current_user.id,
+        username=current_user.username,
         total_points=total
     )
