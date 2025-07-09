@@ -9,6 +9,8 @@ from app.users.models import User
 from .models import UserBadge, BadgeDefinition
 from .schemas import BadgeOut
 from .service import check_and_award_badges  # ✅ 导入更新函数
+from app.checkin.service import get_current_streak
+
 
 router = APIRouter(prefix="/badges", tags=["Badges"])
 
@@ -18,7 +20,9 @@ async def get_all_badges_with_user_progress(
     current_user: User = Depends(get_current_user)
 ):
     # ✅ 每次获取徽章前先更新进度（很关键）
-    await check_and_award_badges(current_user.id, db)
+    streak_count = await get_current_streak(current_user.id, db)
+    # ✅ 更新徽章（包含 streak）
+    await check_and_award_badges(current_user.id, db, streak_count=streak_count)
 
     # 查询所有徽章定义（含图标、类别、要求等）
     result = await db.execute(select(BadgeDefinition))

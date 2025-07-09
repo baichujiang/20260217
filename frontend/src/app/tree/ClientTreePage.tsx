@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Header } from "@/components/ui/Header";
 import { HeaderStats } from "@/components/HeaderStats";
 import { Leaderboard } from "@/components/Leaderboard";
@@ -18,6 +18,14 @@ import RewardModal, { AddressFormData } from "@/components/RewardModal";
 import SearchParamHandler from "./SearchParamHandler";
 import { Suspense } from "react";
 import { useRouter } from "next/navigation"; 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+  } from "@/components/ui/dialog";
+  
 
 interface TreeType {
   id: number;
@@ -40,11 +48,19 @@ export default function ClientTreePage() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [selectedTreeId, setSelectedTreeId] = useState<number | null>(null);
-  const [isPouring, setIsPouring] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
   const [badges, setBadges] = useState<number>(0);
+  const kettleRef = useRef<HTMLImageElement | null>(null);
 
+  function triggerKettleAnimation() {
+    if (!kettleRef.current) return;
+    const el = kettleRef.current;
+    el.classList.remove("animate-pour");
+    void el.offsetWidth; // 触发重新渲染
+    el.classList.add("animate-pour");
+  }
+  
   useEffect(() => {
     fetchWithAuth("http://localhost:8000/badges/my")
       .then((res) => res.json())
@@ -90,8 +106,6 @@ export default function ClientTreePage() {
     greenPoints >= 10;
 
   async function handleWater(treeId: number, idx: number) {
-    setIsPouring(false);
-    void requestAnimationFrame(() => setIsPouring(true));
 
     try {
       const res = await fetchWithAuth(
@@ -107,9 +121,7 @@ export default function ClientTreePage() {
       setGreenPoints(prev => prev - 10);
     } catch (e) {
       console.error(e);
-    } finally {
-      setTimeout(() => setIsPouring(false), 1200);
-    }
+    } 
   }
 
   async function handleCreateTree(type_id: number) {
@@ -146,8 +158,8 @@ export default function ClientTreePage() {
       setTrees(prev => prev.map(tree => (tree.id === updated.id ? updated : tree)));
       setShowRewardModal(false);
       setSelectedTreeId(null);
-      setSuccessMessage("🎉 Harvest success! The gift will be delivered within a few days");
-      setTimeout(() => setSuccessMessage(null), 8000);
+      setSuccessMessage("Harvest success! The gift will be delivered within a few days");
+
     } catch (e) {
       console.error(e);
       alert("Failed to submit reward address");
@@ -171,10 +183,19 @@ export default function ClientTreePage() {
       <Header />
       <button
         onClick={() => router.push("/myrewards")}
-        className="fixed top-40 left-8 z-50 bg-yellow-400 text-white text-sm font-semibold px-4 py-2 rounded-md shadow hover:bg-yellow-500 transition"
-      >
-        🎁 My Rewards
-      </button>
+        className="fixed top-36 left-4 z-50 p-0 bg-transparent rounded-full animate-float transition active:scale-95 hover:scale-105"
+        aria-label="My Rewards"
+        >
+        <Image
+            src="/rewards.png"  // 确保文件在 public/rewards.png
+            alt="My Rewards"
+            width={80}
+            height={80}
+            className="drop-shadow-lg"
+        />
+        </button>
+
+
       
       <section className="relative">
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
@@ -214,7 +235,10 @@ export default function ClientTreePage() {
               {currentTree && (
                 <div className="absolute top-0 right-4 z-10">
                   <button
-                    onClick={() => handleWater(currentTree.id, activeIndex)}
+                    onClick={() => {
+                        triggerKettleAnimation();
+                        handleWater(currentTree.id, activeIndex);
+                      }}
                     disabled={!canWater}
                     className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium ${
                       canWater
@@ -227,13 +251,15 @@ export default function ClientTreePage() {
                         : `Water this tree`
                     }
                   >
-                    <Image
-                      src="/kettle.png"
-                      alt="Watering Kettle"
-                      width={96}
-                      height={96}
-                      className={isPouring ? "animate-pour" : ""}
+                    <img
+                    ref={kettleRef}
+                    src="/kettle.png"
+                    alt="Watering Kettle"
+                    width={96}
+                    height={96}
+                    className="transition" // 添加过渡效果，初始不加 animate-pour，由 trigger 函数动态添加
                     />
+
                   </button>
                 </div>
               )}
@@ -309,20 +335,35 @@ export default function ClientTreePage() {
         onSubmit={handleHarvestSubmit}
       />
 
-      {successMessage && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-4 animate-fade-in-out z-50">
-          <span>{successMessage}</span>
-          <button
-            onClick={() => {
-              setSuccessMessage(null);
-              router.push("/myrewards");
-            }}
-            className="bg-white text-green-700 font-semibold text-sm px-3 py-1 rounded-md hover:bg-gray-100 transition"
-          >
-            My Rewards
-          </button>
-        </div>
-      )}
+        <Dialog
+        open={!!successMessage}
+        onOpenChange={(open) => {
+            if (!open) setSuccessMessage(null);
+        }}
+        >
+        <DialogContent className="max-w-sm">
+            <DialogHeader>
+            <DialogTitle className="text-green-700 text-lg">
+                Harvest Success!
+            </DialogTitle>
+            </DialogHeader>
+            <div className="text-gray-700 text-sm">
+            The gift will be delivered within a few days.
+            </div>
+            <DialogFooter className="mt-4">
+            <button
+                onClick={() => {
+                setSuccessMessage(null);
+                router.push("/myrewards");
+                }}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+            >
+                Go to My Rewards
+            </button>
+            </DialogFooter>
+        </DialogContent>
+        </Dialog>
+
     </div>
   );
 }

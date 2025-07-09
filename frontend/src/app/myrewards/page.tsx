@@ -37,10 +37,10 @@ export default function MyRewardsPage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-green-50">
+    <div className="min-h-screen bg-[linear-gradient(to_bottom,_#f0fdf4_35%,_white_40%)]">
       <Header />
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">🎁 My Rewards</h1>
+        <h1 className="text-2xl font-bold mb-4">My Rewards</h1>
 
         {loading ? (
           <p className="text-gray-500">Loading...</p>
@@ -60,7 +60,7 @@ export default function MyRewardsPage() {
                 />
                 <div>
                   <p className="font-semibold">
-                    🎄 {r.tree.type.species} Tree → 🎁 {r.gift_type}
+                     {r.tree.type.species} Tree →  {r.gift_type}
                   </p>
                   <p className="text-sm text-gray-500">
                     Submitted on: {new Date(r.submitted_at).toLocaleDateString()}
