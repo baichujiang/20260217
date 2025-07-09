@@ -5,13 +5,12 @@ class UserCreate(BaseModel):
     username: str
     password: str
 
-class UserRead(BaseModel):
+class UserRegisterRead(BaseModel):
     id: int
     username: str
-    avatar_url: Optional[str] = None
 
     class Config:
-        from_attributes = True  # ✅ use this instead of orm_mode in Pydantic v2
+        from_attributes = True
 
 class Token(BaseModel):
     access_token: str
