@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/Header";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner";
 
 export default function AccountPage() {
     const router = useRouter();
@@ -16,12 +18,15 @@ export default function AccountPage() {
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // 🚀 Check if already logged in
+    // Check if already logged in
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const token = localStorage.getItem("token");
-            if (token) {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const decoded = jwtDecode<{ exp: number }>(token);
+            if (decoded.exp * 1000 > Date.now()) {
                 router.push("/account/profile");
+            } else {
+                localStorage.removeItem("token");
             }
         }
     }, [router]);
@@ -51,20 +56,14 @@ export default function AccountPage() {
             );
 
             const { access_token } = response.data;
-            console.log("✅ Received token:", access_token);
             localStorage.setItem("token", access_token);
 
-            setMessage("✅ Logged in successfully!");
+            toast.success("Logged in successfully!");
 
-            // 🚀 Immediately navigate to profile
+            // Immediately navigate to profile
             router.push("/account/profile");
         } catch (err: any) {
-            console.error("❌ Login error:", err);
-            if (err.response) {
-                setMessage(`❌ ${err.response.status}: ${JSON.stringify(err.response.data)}`);
-            } else {
-                setMessage("❌ Login failed. Check console for details.");
-            }
+            setMessage("Login failed. Incorrect username or password.");
         } finally {
             setLoading(false);
         }

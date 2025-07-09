@@ -7,6 +7,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
+    avatar_url = Column(String, nullable=True)
     
     credentials = relationship("UserCredentials", back_populates="user", uselist=False, cascade="all, delete-orphan")
 

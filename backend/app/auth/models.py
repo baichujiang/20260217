@@ -8,7 +8,6 @@ class UserCredentials(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(ForeignKey("users.id"))
     hashed_password = Column(String)
-    avatar_url = Column(String, nullable=True)
 
     user = relationship("User", back_populates="credentials")
 
