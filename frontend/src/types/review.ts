@@ -11,7 +11,6 @@ export interface Review {
     energy_rating: number;
     comment: string;
     tag_ids: number[];
-    // images: string[];
 }
 
 export interface ReviewFormProps {
@@ -26,9 +25,16 @@ export interface Tag {
     category: string;
 }
 
+export interface ReviewImage {
+  id: string;
+  url: string;
+  uploaded_at: string;
+}
+
 export interface Comment {
-    review_id: string;
-    user_name: string;
-    comment: string;
-    created_at: string;
+  review_id: string;
+  user_name: string;
+  comment: string;
+  created_at: string;
+  images: ReviewImage[];
 }

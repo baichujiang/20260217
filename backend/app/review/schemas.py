@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field, conint
+import os
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, conint, field_serializer
 from typing import Annotated, List, Optional
 from uuid import UUID
 from datetime import datetime
@@ -24,24 +25,16 @@ class ReviewTagCreate(ReviewTagBase):
 class ReviewTagRead(ReviewTagBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- ReviewImage Schemas ---
-class ReviewImageCreate(BaseModel):
-    file_path: str
-    
-    class Config:
-        orm_mode = True
-
 class ReviewImageRead(BaseModel):
     id: UUID
-    file_path: str
+    url: HttpUrl
     uploaded_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # --- Review Schemas ---
@@ -79,6 +72,7 @@ class ReviewCommentRead(BaseModel):
     user_name: str
     created_at: str
     comment: str
+    images: List[ReviewImageRead]
 
     class Config:
         orm_mode = True

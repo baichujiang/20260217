@@ -7,6 +7,10 @@ import { Restaurant } from "@/types/restaurant"
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Comment } from "@/types/review"
+import { TopTag } from '@/types/restaurant';
+
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 
 export default function RestaurantDetailPageContent() {
@@ -17,26 +21,30 @@ export default function RestaurantDetailPageContent() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [tags, setTags] = useState<TopTag[]>([]);
 
 useEffect(() => {
     if (!id) return;
 
     const fetchData = async () => {
       try {
-        const [restaurantRes, commentsRes] = await Promise.all([
-          fetch(`http://localhost:8000/restaurants/${id}`),
-          fetch(`http://localhost:8000/reviews/restaurant/${id}/comments`)
+        const [restaurantRes, commentsRes, tagsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/restaurants/${id}`),
+          fetch(`${API_BASE_URL}/reviews/restaurant/${id}/comments`),
+          fetch(`${API_BASE_URL}/restaurants/${id}/top-tags`)
         ]);
 
-        if (!restaurantRes.ok || !commentsRes.ok) {
+        if (!restaurantRes.ok || !commentsRes.ok || !tagsRes.ok) {
           throw new Error("Failed to fetch data");
         }
 
         const restaurantData: Restaurant = await restaurantRes.json();
         const commentsData: Comment[] = await commentsRes.json();
+        const tagsData: TopTag[] = await tagsRes.json();
 
         setRestaurant(restaurantData);
         setComments(commentsData);
+        setTags(tagsData);
       } catch (err: any) {
         setError(err.message || "Failed to load data.");
       } finally {
@@ -69,7 +77,7 @@ useEffect(() => {
         </Badge>
       </div>
 
-      <OverviewReviewTab restaurant={restaurant} comments={comments} />
+      <OverviewReviewTab restaurant={restaurant} comments={comments} tags={tags}/>
     </>
   );
 }

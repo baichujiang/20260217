@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List
+from fastapi import APIRouter, Depends, HTTPException, Path, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..core.database import get_db
 from . import schemas, services
@@ -12,6 +13,15 @@ async def create_restaurant(
     db: AsyncSession = Depends(get_db)
 ):
     return await services.create_restaurant(db, restaurant)
+
+
+@router.get("/search", response_model=List[schemas.RestaurantOut])
+async def search_restaurants(
+    name: str = Query(..., description="Restaurant name to search approximately"),
+    db: AsyncSession = Depends(get_db),
+):
+    results = await services.search_restaurants_by_name(db, name)
+    return results
 
 
 @router.get("/{restaurant_id}", response_model=schemas.RestaurantOut)
@@ -54,3 +64,19 @@ async def delete_restaurant(
     success = await services.delete_restaurant(db, restaurant_id)
     if not success:
         raise HTTPException(status_code=404, detail="Restaurant not found")
+
+
+@router.get(
+    "/{restaurant_id}/top-tags",
+    response_model=List[schemas.TopTagOut],
+    summary="Get the top 5 most mentioned tags for a restaurant",
+)
+async def top_tags_for_restaurant(
+    restaurant_id: int = Path(..., description="ID of the restaurant"),
+    db: AsyncSession = Depends(get_db)
+):
+    tags = await services.get_top_tags_for_restaurant(db, restaurant_id)
+    return [
+        {"name": name, "category": category, "count": count}
+        for name, category, count in tags
+    ]

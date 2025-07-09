@@ -8,7 +8,7 @@ from ..core.security import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-@router.post("/register", response_model=schemas.UserRead)
+@router.post("/register", response_model=schemas.UserRegisterRead)
 async def register(user: schemas.UserCreate, db: AsyncSession = Depends(database.get_db)):
     return await services.create_user(db, user)
 

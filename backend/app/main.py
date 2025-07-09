@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
 from .core.database import engine
@@ -48,6 +49,7 @@ async def lifespan(app: FastAPI):
     print("[Shutdown]")
 
 app = FastAPI(lifespan=lifespan)
+app.mount("/review-images", StaticFiles(directory="uploads/review_images"), name="review-images")
 
 app.add_middleware(
     CORSMiddleware,

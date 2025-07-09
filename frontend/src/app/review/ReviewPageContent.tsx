@@ -6,6 +6,8 @@ import ReviewForm from '@/app/review/ReviewForm';
 import { Header } from '@/components/ui/Header';
 import { ReviewFormProps, Tag } from '@/types/review';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function ReviewPageContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -17,8 +19,8 @@ export default function ReviewPageContent() {
     async function fetchData() {
       try {
         const [restaurantRes, tagsRes] = await Promise.all([
-          fetch(`http://localhost:8000/restaurants/${id}`),
-          fetch(`http://localhost:8000/reviews/tags`)
+          fetch(`${API_BASE_URL}/restaurants/${id}`),
+          fetch(`${API_BASE_URL}/reviews/tags`)
         ]);
 
         const restaurantData = await restaurantRes.json();

@@ -1,4 +1,3 @@
-// frontend/src/app/page.tsx
 "use client"
 
 import { useState } from "react"
@@ -10,8 +9,14 @@ import {
     DrawerTrigger,
     DrawerContent,
 } from "@/components/ui/drawer"
-import { Clock, Heart, LocateFixed, Search, UserCircle } from "lucide-react"
-import { motion } from "framer-motion"
+import {
+    Bed,
+    Utensils,
+    Heart,
+    LocateFixed,
+    UserCircle,
+    Search,
+} from "lucide-react"
 import TreeSection from "@/components/ui/TreeSection"
 import ImageScrollSection from "@/components/ui/ImageScrollSection"
 import DailyTasksSection from "@/components/ui/DailyTask"
@@ -29,25 +34,34 @@ export default function Home() {
                     <Drawer>
                         <DrawerTrigger asChild>
                             <Button
-                                className="w-10 h-10 p-2 rounded-full flex items-center justify-center hover:bg-gray-100">
+                                className="w-10 h-10 p-2 rounded-full flex items-center justify-center hover:bg-gray-100"
+                            >
                                 ☰
                             </Button>
                         </DrawerTrigger>
                         <DrawerContent
                             className="h-full w-64 bg-white shadow-lg rounded-none p-4 fixed top-0 left-0"
                         >
-                            <div className="space-y-4 mt-8">
+                            <div className="space-y-2 mt-4">
                                 <Link href="/account" className="w-full">
-                                    <Button variant="ghost" className="w-full justify-start">
-                                        👤 Account
+                                    <Button variant="ghost" className="w-full justify-start gap-2">
+                                        <UserCircle className="w-5 h-5" />
+                                        Account
                                     </Button>
                                 </Link>
-                                <Button variant="ghost" className="w-full justify-start">
-                                    ❤️ Favorites
-                                </Button>
-                                <Button variant="ghost" className="w-full justify-start">
-                                    📍 Nearby
-                                </Button>
+                                <Link href="/hotel" className="w-full">
+                                    <Button variant="ghost" className="w-full justify-start gap-2">
+                                        <Bed className="w-5 h-5" />
+                                        Hotel (demo)
+                                    </Button>
+                                </Link>
+                                <Link href="/restaurant" className="w-full">
+                                    <Button variant="ghost" className="w-full justify-start gap-2">
+                                        <Utensils className="w-5 h-5" />
+                                        Restaurant
+                                    </Button>
+                                </Link>
+
                             </div>
                         </DrawerContent>
                     </Drawer>
@@ -60,7 +74,7 @@ export default function Home() {
                         </div>
                     </Link>
 
-                    {/* Right: Account (left), Search (right) */}
+                    {/* Right: Account and Search */}
                     <div className="flex items-center space-x-2">
                         <Link href="/account">
                             <Button
@@ -81,34 +95,9 @@ export default function Home() {
                 </div>
             </div>
 
-            {/* Sticky Secondary Menu */}
-            <div className="sticky top-16 z-40 bg-white border-b h-10 px-4 flex justify-around items-center text-gray-600 text-xs font-medium backdrop-blur-sm bg-white/80">
-                <Link href="/hotel">
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex flex-col items-center px-2 py-1 hover:text-black"
-                    >
-                        <span className="text-base leading-none">🏨</span>
-                        <span className="text-[10px]">Hotel</span>
-                    </motion.button>
-                </Link>
-                <Link href="/restaurant">
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex flex-col items-center px-2 py-1 hover:text-black"
-                    >
-                        <span className="text-base leading-none">🍽️</span>
-                        <span className="text-[10px]">Restaurant</span>
-                    </motion.button>
-                </Link>
-            </div>
-
-
             {/* Search Input */}
             {showSearchInput && (
-                <div className="absolute top-24 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4">
+                <div className="absolute top-16 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4">
                     <input
                         type="text"
                         value={searchQuery}
