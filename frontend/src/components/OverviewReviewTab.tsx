@@ -7,13 +7,15 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Restaurant } from "@/types/restaurant"
 import { Comment } from "@/types/review"
+import { TopTag } from "@/types/restaurant";
 
 interface Props {
   restaurant: Restaurant;
   comments: Comment[];
+  tags: TopTag[]
 }
 
-export default function OverviewReviewTab({ restaurant, comments }: Props) {
+export default function OverviewReviewTab({ restaurant, comments, tags }: Props) {
   return (
     <Tabs defaultValue="Overview">
       <TabsList>
@@ -24,7 +26,7 @@ export default function OverviewReviewTab({ restaurant, comments }: Props) {
         <RestaurantOverview {...restaurant} />
       </TabsContent>
       <TabsContent value="Review">
-        <CommentCards comments={comments}/>
+        <CommentCards comments={comments} tags={tags}/>
         <div className="space-y-6 pb-10"></div>
             <div className="fixed bottom-0 left-0 w-full p-4 sm:static sm:border-none sm:p-0">
                 <div className="max-w-md mx-auto">

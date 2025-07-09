@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import func, desc
 from .models import Restaurant
 from .schemas import RestaurantCreate, RestaurantUpdate
+from ..review.models import ReviewTag, review_tag_association, Review
 from typing import Optional, List
 
 
@@ -50,3 +52,34 @@ async def delete_restaurant(db: AsyncSession, restaurant_id: int) -> bool:
     await db.delete(db_restaurant)
     await db.commit()
     return True
+
+
+async def search_restaurants_by_name(db: AsyncSession, query: str, limit: int = 10) -> List[Restaurant]:
+    similarity = func.similarity(Restaurant.name, query)
+    stmt = (
+        select(Restaurant)
+        .where(Restaurant.name.op('%')(query))  # uses pg_trgm fuzzy operator
+        .order_by(similarity.desc())
+        .limit(limit)
+    )
+    result = await db.execute(stmt)
+    return result.scalars().all()
+
+
+async def get_top_tags_for_restaurant(session: AsyncSession, restaurant_id: int, limit: int = 5):
+    stmt = (
+        select(
+            ReviewTag.name,
+            ReviewTag.category,
+            func.count(ReviewTag.id).label("count")
+        )
+        .select_from(review_tag_association)
+        .join(ReviewTag, review_tag_association.c.tag_id == ReviewTag.id)
+        .join(Review, review_tag_association.c.review_id == Review.id)
+        .where(Review.restaurant_id == restaurant_id)
+        .group_by(ReviewTag.id)
+        .order_by(desc("count"))
+        .limit(limit)
+    )
+    result = await session.execute(stmt)
+    return result.all()
