@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,16 @@ export default function AccountPage() {
     });
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
-    const [userInfo, setUserInfo] = useState<null | { id: number; username: string }>(null);
+
+    // 🚀 Check if already logged in
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
+            if (token) {
+                router.push("/account/profile");
+            }
+        }
+    }, [router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -46,7 +55,9 @@ export default function AccountPage() {
             localStorage.setItem("token", access_token);
 
             setMessage("✅ Logged in successfully!");
-            setFormData({ username: "", password: "" });
+
+            // 🚀 Immediately navigate to profile
+            router.push("/account/profile");
         } catch (err: any) {
             console.error("❌ Login error:", err);
             if (err.response) {
@@ -59,73 +70,51 @@ export default function AccountPage() {
         }
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        setUserInfo(null);
-        setMessage("✅ Logged out.");
-    };
-
     return (
         <main className="min-h-screen bg-white">
             <Header />
             <div className="flex items-center justify-center px-4 py-12">
                 <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
-                    {userInfo ? (
-                        <>
-                            <h1 className="text-2xl font-semibold text-center mb-6">My Account</h1>
-                            <p className="text-center text-lg">
-                                ✅ Logged in as <strong>{userInfo.username}</strong> (ID: {userInfo.id})
-                            </p>
-                            <div className="text-center mt-6">
-                                <Button onClick={handleLogout}>Log out</Button>
-                            </div>
-                            {message && (
-                                <p className="text-center text-sm mt-4 text-green-600">{message}</p>
-                            )}
-                        </>
-                    ) : (
-                        <>
-                            <h1 className="text-2xl font-semibold text-center mb-6">Login</h1>
-                            <form className="space-y-4" onSubmit={handleLogin}>
-                                <input
-                                    type="text"
-                                    name="username"
-                                    placeholder="Username"
-                                    value={formData.username}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                <input
-                                    type="password"
-                                    name="password"
-                                    placeholder="Password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                                <Button type="submit" className="w-full" disabled={loading}>
-                                    {loading ? "Logging in..." : "Login"}
-                                </Button>
-                            </form>
-                            {message && (
-                                <p className="text-center text-sm mt-4 text-red-600">{message}</p>
-                            )}
-                            <div className="text-center mt-4 text-sm">
-                                Don’t have an account?{" "}
-                                <button
-                                    type="button"
-                                    onClick={() => router.push("/account/register")}
-                                    className="text-blue-600 hover:underline"
-                                >
-                                    Register
-                                </button>
-                            </div>
-                        </>
+                    <h1 className="text-2xl font-semibold text-center mb-6">Login</h1>
+                    <form className="space-y-4" onSubmit={handleLogin}>
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? "Logging in..." : "Login"}
+                        </Button>
+                    </form>
+                    {message && (
+                        <p className="text-center text-sm mt-4 text-red-600">{message}</p>
                     )}
+                    <div className="text-center mt-4 text-sm">
+                        Don’t have an account?{" "}
+                        <button
+                            type="button"
+                            onClick={() => router.push("/account/register")}
+                            className="text-blue-600 hover:underline"
+                        >
+                            Register
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
     );
 }
+

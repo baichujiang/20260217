@@ -39,3 +39,15 @@ class TreeInDBBase(TreeBase):
 # ——— 4. 对外返回树结构：嵌套品种信息 ——— #
 class Tree(TreeInDBBase):
     type: TreeTypeOut
+
+# ——— 5. 用于用户查看自己的树列表 ——— #
+class UserOut(BaseModel):
+    id: int
+    username: str
+    watering_amount: int  # 这里是浇水积分
+
+    class Config:
+        orm_mode = True
+
+class WaterTreeRequest(BaseModel):
+    amount: int

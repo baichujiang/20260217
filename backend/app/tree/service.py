@@ -5,8 +5,9 @@ from sqlalchemy import select                                         # 异步�
 from . import models, schemas                                         # 本模块模型与 schema
 from app.points import service as point_service                       # 引入积分服务
 from fastapi import HTTPException, status
-from ..watering.models import WateringLog
+from .models import WateringLog
 from sqlalchemy.orm import selectinload  # ✅ 添加这一行
+from app.badges.service import check_and_award_badges
 
 # 创建一棵新树，并奖励积分
 async def create_tree(db: AsyncSession, user_id: int, tree_in: schemas.TreeCreate):
@@ -88,5 +89,6 @@ async def water_tree(db: AsyncSession, user_id: int, tree_id: int, amount: int):
     db.add(log)
     await db.commit()
     await db.refresh(tree)
+    await check_and_award_badges(user_id=user_id, db=db)
 
     return tree

@@ -8,12 +8,13 @@ from app.core.database import get_db
 from app.auth.services import get_current_user
 from app.harvest.schemas import HarvestRewardRequest
 from app.tree.models import Tree
-from app.harvest.models import RewardDelivery
+from app.harvest.models import RewardDelivery, HarvestLog
 from app.users.models import User
+from app.badges.service import check_and_award_badges
 
-router = APIRouter()
+router = APIRouter(prefix="/harvest", tags=["Harvest"])
 
-@router.get("/harvest/me/rewards")
+@router.get("/me/rewards")
 async def get_my_rewards(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -26,7 +27,7 @@ async def get_my_rewards(
     return result.scalars().all()
 
 
-@router.post("/trees/{tree_id}/harvest")
+@router.post("/{tree_id}")
 async def harvest_tree(
     tree_id: int,
     data: HarvestRewardRequest,
@@ -66,8 +67,11 @@ async def harvest_tree(
     # 重置成长值
     tree.growth_value = 0
     db.add(tree)
-
+    log = HarvestLog(user_id=current_user.id, tree_id=tree_id)
+    db.add(log)
+    
     await db.commit()
     await db.refresh(tree)
+    await check_and_award_badges(user_id=current_user.id, db=db)
 
     return tree

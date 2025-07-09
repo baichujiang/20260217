@@ -32,3 +32,16 @@ class TreeType(Base):
     # 反向关系（可选）
     trees             = relationship("Tree", back_populates="type")
 
+class WateringLog(Base):
+    __tablename__ = "watering_logs"
+    __table_args__ = {"extend_existing": True}
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    tree_id = Column(Integer, ForeignKey("trees.id", ondelete="CASCADE"), nullable=False)
+    amount = Column(Integer, nullable=False)  # 浇水积分
+    timestamp = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    # 关系
+    user = relationship("User", back_populates="watering_logs")
+    tree = relationship("Tree", back_populates="watering_logs")
