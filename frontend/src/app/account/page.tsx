@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/Header";
@@ -17,6 +17,8 @@ export default function AccountPage() {
     });
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get("redirect") || "/account/profile";
 
     // Check if already logged in
     useEffect(() => {
@@ -29,7 +31,7 @@ export default function AccountPage() {
                 localStorage.removeItem("token");
             }
         }
-    }, [router]);
+      }, [router, redirect]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });

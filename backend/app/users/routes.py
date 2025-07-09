@@ -9,6 +9,7 @@ from .models import User
 from .schemas import UserInfoRead, UserAvatarInfo
 from ..auth.services import get_current_user
 from ..core.database import get_db
+from ..auth.services import get_current_user
 
 router = APIRouter(
     prefix="/users",

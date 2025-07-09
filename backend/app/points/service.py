@@ -2,6 +2,7 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession                 # 异步数据库会话
 from sqlalchemy import select, func                             # SQL 表达式构造器
+from datetime import datetime
 from . import models                                             # 积分数据模型
 
 # 添加一笔新的积分记录
@@ -9,7 +10,8 @@ async def add_points(db: AsyncSession, user_id: int, amount: int, reason: str):
     point = models.Point(                                        # 创建积分对象
         user_id=user_id,
         amount=amount,
-        reason=reason
+        reason=reason,
+        created_at=datetime.utcnow()
     )
     db.add(point)                                                # 添加到数据库会话
     await db.commit()                                            # 提交事务

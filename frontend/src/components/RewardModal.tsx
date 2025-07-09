@@ -34,7 +34,7 @@ const RewardModal: React.FC<RewardModalProps> = ({ open, onClose, onSubmit }) =>
 
   const handleFormSubmit = () => {
     if (!form.full_name || !form.street_address || !form.postal_code || !form.city || !form.phone_number) {
-      alert("Bitte füllen Sie alle Pflichtfelder aus.");
+      alert("Please fill out all required fields.");
       return;
     }
     onSubmit(form);
@@ -44,22 +44,23 @@ const RewardModal: React.FC<RewardModalProps> = ({ open, onClose, onSubmit }) =>
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Lieferadresse eingeben</DialogTitle>
+          <DialogTitle>Enter Shipping Address</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3">
-          <Input placeholder="Vollständiger Name *" value={form.full_name} onChange={e => handleChange("full_name", e.target.value)} />
-          <Input placeholder="Straße und Hausnummer *" value={form.street_address} onChange={e => handleChange("street_address", e.target.value)} />
-          <Input placeholder="Postleitzahl (PLZ) *" value={form.postal_code} onChange={e => handleChange("postal_code", e.target.value)} />
-          <Input placeholder="Ort *" value={form.city} onChange={e => handleChange("city", e.target.value)} />
-          <Input placeholder="Bundesland (optional)" value={form.state} onChange={e => handleChange("state", e.target.value)} />
-          <Input placeholder="Telefonnummer *" value={form.phone_number} onChange={e => handleChange("phone_number", e.target.value)} />
+          <Input placeholder="Full Name *" value={form.full_name} onChange={e => handleChange("full_name", e.target.value)} />
+          <Input placeholder="Street Address *" value={form.street_address} onChange={e => handleChange("street_address", e.target.value)} />
+          <Input placeholder="Postal Code *" value={form.postal_code} onChange={e => handleChange("postal_code", e.target.value)} />
+          <Input placeholder="City *" value={form.city} onChange={e => handleChange("city", e.target.value)} />
+          <Input placeholder="State (optional)" value={form.state} onChange={e => handleChange("state", e.target.value)} />
+          <Input placeholder="Phone Number *" value={form.phone_number} onChange={e => handleChange("phone_number", e.target.value)} />
           <Button className="w-full mt-2" onClick={handleFormSubmit}>
-            Geschenk anfordern
+            Claim Gift
           </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
 };
+
 export default RewardModal;
