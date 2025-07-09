@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/Header";
@@ -17,10 +17,7 @@ export default function AccountPage() {
     });
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
-    const searchParams = useSearchParams();
-    const redirect = searchParams.get("redirect") || "/account/profile";
 
-    // Check if already logged in
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -31,7 +28,7 @@ export default function AccountPage() {
                 localStorage.removeItem("token");
             }
         }
-      }, [router, redirect]);
+    }, [router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,8 +58,6 @@ export default function AccountPage() {
             localStorage.setItem("token", access_token);
 
             toast.success("Logged in successfully!");
-
-            // Immediately navigate to profile
             router.push("/account/profile");
         } catch (err: any) {
             setMessage("Login failed. Incorrect username or password.");
@@ -118,4 +113,3 @@ export default function AccountPage() {
         </main>
     );
 }
-
