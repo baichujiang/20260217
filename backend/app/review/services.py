@@ -12,6 +12,7 @@ from .models import Review, ReviewImage, ReviewTag
 from .schemas import ReviewCreate, ReviewImageRead, ReviewTagCreate, ReviewCommentRead
 from .utils import build_image_response
 from ..restaurant.services import update_score
+from ..points.service import add_points
 
 
 # --- REVIEW CRUD ---
@@ -52,6 +53,8 @@ async def create_review(db: AsyncSession, data: ReviewCreate, user_id: int) -> R
     review_with_relations = result.scalar_one()
 
     await update_score(db, data.restaurant_id)
+
+    await add_points(db, user_id, 3, "review")
 
     return review_with_relations
 

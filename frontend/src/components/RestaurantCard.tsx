@@ -45,7 +45,7 @@ export default function RestaurantCard({
               {normal_score?.toFixed(1) ?? "N/A"}
             </Badge>
 
-            <Badge variant="outline" className="text-green-500 text-sm flex items-center gap-1">
+            <Badge variant="outline" className="text-[#57cc99] text-sm flex items-center gap-1">
               <Star className="w-4 h-4" fill="currentColor" />
               {typeof sustainability_score === "number"
                 ? sustainability_score.toFixed(1)

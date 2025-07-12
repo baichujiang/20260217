@@ -71,7 +71,7 @@ useEffect(() => {
             ? restaurant.normal_score
             : "N/A"}
         </Badge>
-        <Badge variant="outline" className="text-green-500 text-base">
+        <Badge variant="outline" className="text-[#57cc99] text-base">
           <Star fill="currentColor" />
             {typeof restaurant.sustainability_score === "number"
               ? restaurant.sustainability_score

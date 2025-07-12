@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Header } from "@/components/ui/Header"
+import { Header } from "@/components/Header"
 import RestaurantList from "@/components/RestaurantList"
 import { RestaurantCardProps } from "@/types/restaurant"
 

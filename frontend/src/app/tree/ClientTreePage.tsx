@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import { HeaderStats } from "@/components/HeaderStats";
 import { Leaderboard } from "@/components/Leaderboard";
 import { Progress } from "@/components/ui/progress";

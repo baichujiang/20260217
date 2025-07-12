@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserCircle, Pencil, Trophy, Flame, Award, Calendar } from "lucide-react";
 import Image from "next/image";
@@ -248,7 +248,8 @@ export default function ProfilePage() {
               </Card>
 
               {/* Points */}
-              <Card className="shadow text-white bg-[linear-gradient(to_right,#60BF8F,#3AA5A2)]">
+              <Card className="shadow text-white bg-[linear-gradient(to_right,#80ed99,#38A3A5)]">
+
                 <CardContent className="pt-6 text-center space-y-2">
                   <div className="flex items-center justify-center space-x-2 mb-3">
                     <Trophy className="w-6 h-6 text-yellow-300" />
@@ -273,7 +274,7 @@ export default function ProfilePage() {
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Current Streak</p>
                       <div className="flex items-center space-x-2">
-                        <span className="text-3xl font-bold text-[#3AA5A2]">{currentStreak}</span>
+                        <span className="text-3xl font-bold text-[#38a3a5]">{currentStreak}</span>
                         <span className="text-gray-500">days</span>
                       </div>
                     </div>
@@ -281,7 +282,7 @@ export default function ProfilePage() {
                       {[...Array(Math.min(currentStreak, 7))].map((_, i) => (
                         <div
                           key={i}
-                          className="w-2 h-8 bg-[linear-gradient(to_top,#60BF8F,#3AA5A2)] rounded-full"
+                          className="w-2 h-8 bg-[linear-gradient(to_top,#80ed99,#38A3A5)] rounded-full"
                         ></div>
                       ))}
                     </div>
@@ -292,12 +293,12 @@ export default function ProfilePage() {
                     disabled={hasCheckedInToday || checkInLoading}
                     className={`w-full h-10 text-lg font-semibold transition-all duration-300 ${
                       hasCheckedInToday
-                        ? "bg-[#3AA5A2] text-white"
-                        : "shadow text-white bg-[#60BF8F]"
+                        ? "bg-[#38a3a5] text-white"
+                        : "shadow text-white bg-[#57cc99]"
                     }`}
                   >
                     <Calendar className="w-5 h-5 mr-2" />
-                    {hasCheckedInToday ? "Checked In Today! ✓" : "Daily Check-in"}
+                    {hasCheckedInToday ? "Checked In Today!" : "Daily Check-in"}
                   </Button>
                 </CardContent>
               </Card>

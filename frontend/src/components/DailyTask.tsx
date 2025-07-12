@@ -22,22 +22,22 @@ const defaultCompleted = {
 
 const tasks = [
     {
-        key: "shareReview",
-        title: "Share a review",
+        key: "writeReview",
+        title: "Write a review",
         bonus: 3,
-        description: "Post a review for any location today.",
+        description: "Share your experience to others in the community.",
     },
     {
-        key: "viewHotels",
-        title: "View 10 hotels",
+        key: "checkIn",
+        title: "Daily check in",
         bonus: 3,
-        description: "Explore at least 10 hotel pages today.",
+        description: "Don't forget to check in on your profile page today.",
     },
     {
-        key: "checkRestaurants",
-        title: "Check 5 restaurants",
+        key: "waterTree",
+        title: "Water your tree",
         bonus: 2,
-        description: "View at least 5 different restaurant listings.",
+        description: "Your tree needs you! Water it to keep it thriving.",
     },
 ]
 
@@ -62,7 +62,7 @@ export default function DailyTasksSection({ completed = defaultCompleted }: Prop
                                     <h3 className="text-base font-semibold text-gray-800">{task.title}</h3>
                                     <p className="text-sm text-gray-500 mt-1">{task.description}</p>
                                 </div>
-                                <Badge className="bg-green-100 text-green-700 font-medium text-xs py-1 px-2">
+                                <Badge className="bg-green-50 text-green-700 font-medium text-xs py-1 px-2">
                                     +{task.bonus} pts
                                 </Badge>
                             </div>

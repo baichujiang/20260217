@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface Badge {

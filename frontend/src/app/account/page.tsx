@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 
@@ -17,6 +17,23 @@ export default function AccountPage() {
     });
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const [authChecked, setAuthChecked] = useState(false);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            const decoded = jwtDecode<{ exp: number }>(token);
+            if (decoded.exp * 1000 > Date.now()) {
+                router.push("/account/profile");
+                return; // Prevent setting authChecked if redirecting
+            } else {
+                localStorage.removeItem("token");
+            }
+        }
+        setAuthChecked(true);
+    }, [router]);
+
+    if (!authChecked) return null;
 
     useEffect(() => {
         const token = localStorage.getItem("token");

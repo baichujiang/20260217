@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import axios from "axios"
 import { Button } from "@/components/ui/button"
-import { Header } from "@/components/ui/Header"
+import { Header } from "@/components/Header"
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({ username: "", password: "" })

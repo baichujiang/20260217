@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
