@@ -21,30 +21,23 @@ export default function AccountPage() {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
+
         if (token) {
-            const decoded = jwtDecode<{ exp: number }>(token);
-            if (decoded.exp * 1000 > Date.now()) {
-                router.push("/account/profile");
-                return; // Prevent setting authChecked if redirecting
-            } else {
+            try {
+                const decoded = jwtDecode<{ exp: number }>(token);
+                if (decoded.exp * 1000 > Date.now()) {
+                    router.push("/account/profile");
+                    return;
+                } else {
+                    localStorage.removeItem("token");
+                }
+            } catch (error) {
+                console.error("Invalid token", error);
                 localStorage.removeItem("token");
             }
         }
+
         setAuthChecked(true);
-    }, [router]);
-
-    if (!authChecked) return null;
-
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            const decoded = jwtDecode<{ exp: number }>(token);
-            if (decoded.exp * 1000 > Date.now()) {
-                router.push("/account/profile");
-            } else {
-                localStorage.removeItem("token");
-            }
-        }
     }, [router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,6 +75,8 @@ export default function AccountPage() {
             setLoading(false);
         }
     };
+
+    if (!authChecked) return null; // prevent UI flash before auth check
 
     return (
         <main className="min-h-screen bg-white">
