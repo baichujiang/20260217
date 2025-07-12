@@ -88,7 +88,7 @@ const handleSubmit = async () => {
   formData.append("food_rating", String(ratings["Food"] || 0));
   formData.append("service_rating", String(ratings["Service"] || 0));
   formData.append("environment_rating", String(ratings["Environment"] || 0));
-  formData.append("sustainablility_rating", String(ratings["Sustainability"] || 0));
+  formData.append("sustainability_rating", String(ratings["Sustainability"] || 0));
   formData.append("sourcing_rating", String(ratings["Sourcing"] || 0));
   formData.append("waste_rating", String(ratings["Waste"] || 0));
   formData.append("menu_rating", String(ratings["Menu"] || 0));

@@ -11,6 +11,7 @@ from typing import List, Optional
 from .models import Review, ReviewImage, ReviewTag
 from .schemas import ReviewCreate, ReviewImageRead, ReviewTagCreate, ReviewCommentRead
 from .utils import build_image_response
+from ..restaurant.services import update_score
 
 
 # --- REVIEW CRUD ---
@@ -22,7 +23,7 @@ async def create_review(db: AsyncSession, data: ReviewCreate, user_id: int) -> R
         food_rating=data.food_rating,
         service_rating=data.service_rating,
         environment_rating=data.environment_rating,
-        sustainablility_rating=data.sustainablility_rating,
+        sustainability_rating=data.sustainability_rating,
         sourcing_rating=data.sourcing_rating,
         waste_rating=data.waste_rating,
         menu_rating=data.menu_rating,
@@ -49,6 +50,9 @@ async def create_review(db: AsyncSession, data: ReviewCreate, user_id: int) -> R
     )
     result = await db.execute(stmt)
     review_with_relations = result.scalar_one()
+
+    await update_score(db, data.restaurant_id)
+
     return review_with_relations
 
 

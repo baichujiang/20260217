@@ -80,3 +80,8 @@ async def top_tags_for_restaurant(
         {"name": name, "category": category, "count": count}
         for name, category, count in tags
     ]
+
+
+@router.get("/top-sustainable/", response_model=List[schemas.RestaurantOut])
+async def top_sustainable(limit: int = 5, db: AsyncSession = Depends(get_db)):
+    return await services.get_top_sustainable_restaurants(db, limit)
