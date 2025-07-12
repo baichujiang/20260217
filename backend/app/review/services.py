@@ -179,7 +179,7 @@ async def save_and_create_review_image(session: AsyncSession, review_id: UUID, f
         raise HTTPException(status_code=500, detail="Failed to store image. " + str(e))
 
 
-async def get_review_images_by_restaurant(db: AsyncSession, restaurant_id: int) -> List[ReviewImage]:
+async def get_review_images_by_restaurant(db: AsyncSession, restaurant_id: int, limit: int) -> List[ReviewImage]:
     stmt = (
         select(Review)
         .where(Review.restaurant_id == restaurant_id)
@@ -190,7 +190,10 @@ async def get_review_images_by_restaurant(db: AsyncSession, restaurant_id: int) 
 
     all_images = []
     for review in reviews:
-        all_images.extend(review.images)
+        for image in review.images:
+            all_images.append(image)
+            if len(all_images) == limit:
+                return all_images
 
     return all_images
 

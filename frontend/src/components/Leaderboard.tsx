@@ -25,7 +25,6 @@ export const Leaderboard: React.FC = () => {
       if (!res.ok) throw new Error(`Error ${res.status}`);
       const data: LeaderboardEntry[] = await res.json();
       setEntries(data);
-      console.log("🏁 leaderboard data fetched:", data);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch leaderboard');
     } finally {

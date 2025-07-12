@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Header } from "@/components/ui/Header"
-import RestaurantList from "@/components/RestaurantList"
+import RestaurantCard from "@/components/RestaurantCard"
 import { RestaurantCardProps } from "@/types/restaurant"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -57,15 +57,21 @@ export default function RestaurantPage() {
       <Header />
 
       <div className="p-6 max-w-5xl mx-auto">
+        <h1 className="text-xl font-semibold mb-4">Restaurants in Munich</h1>
+        <p className="text-gray-600 mb-6">
+          Browse a selection of Munich's most sustainable restaurants.
+        </p>
+
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <RestaurantList
-            restaurants={restaurants}
-            title="Sustainable Restaurants in Munich"
-            description="Browse a selection of Munich's most sustainable restaurants."
-            variant="middle"
-          />
+          <div className="space-y-4">
+            {restaurants.map((rest) => (
+              <div key={rest.id} className="mb-4">
+                <RestaurantCard {...rest} variant="middle" />
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </main>

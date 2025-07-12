@@ -138,10 +138,11 @@ async def get_comments(
 @router.get("/restaurant/{restaurant_id}/images", response_model=List[ReviewImageRead])
 async def get_review_images_route(
     restaurant_id: int,
+    limit: int = 6,
     db: AsyncSession = Depends(get_db),
     request: Request = None
 ):
-    images = await get_review_images_by_restaurant(db, restaurant_id)
+    images = await get_review_images_by_restaurant(db, restaurant_id, limit)
     return [build_image_response(img, request) for img in images]
 
 

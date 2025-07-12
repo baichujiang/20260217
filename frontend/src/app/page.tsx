@@ -18,8 +18,8 @@ import {
     Search,
 } from "lucide-react"
 import TreeSection from "@/components/ui/TreeSection"
-import ImageScrollSection from "@/components/ui/ImageScrollSection"
-import DailyTasksSection from "@/components/ui/DailyTask"
+import ImageScrollSection from "@/components/ImageScrollSection"
+import DailyTasksSection from "@/components/DailyTask"
 
 export default function Home() {
     const [showSearchInput, setShowSearchInput] = useState(false)

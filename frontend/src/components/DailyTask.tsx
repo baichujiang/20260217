@@ -66,10 +66,10 @@ export default function DailyTasksSection({ completed = defaultCompleted }: Prop
                                     +{task.bonus} pts
                                 </Badge>
                             </div>
-                            <div className="mt-2 text-right">
+                            {/* <div className="mt-2 text-right">
                                 <CheckCircle className={`w-5 h-5 inline-block ${iconColor}`} />
                                 <span className={`text-sm ml-1 ${statusColor}`}>{statusText}</span>
-                            </div>
+                            </div> */}
                         </Card>
                     )
                 })}

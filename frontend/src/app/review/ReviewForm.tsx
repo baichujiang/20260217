@@ -124,7 +124,6 @@ const handleSubmit = async () => {
     setSelectedTags([]);
     setSelectedImages([]);
     setImagePreviews([]);
-    console.log("Review response:", data);
   } catch (error) {
     toast("Failed to submit review");
     console.error(error);

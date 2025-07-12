@@ -67,13 +67,15 @@ useEffect(() => {
       <div className="px-6 py-2 gap-2 flex flex-row">
         <Badge variant="outline" className="text-base">
           <Star fill="currentColor" />
-          {restaurant.normal_score}
+            {typeof restaurant.normal_score === "number"
+            ? restaurant.normal_score
+            : "N/A"}
         </Badge>
         <Badge variant="outline" className="text-green-500 text-base">
           <Star fill="currentColor" />
-          {typeof restaurant.sustainability_score === "number"
-            ? restaurant.sustainability_score.toFixed(1)
-            : "N/A"}
+            {typeof restaurant.sustainability_score === "number"
+              ? restaurant.sustainability_score
+              : "N/A"}
         </Badge>
       </div>
 
