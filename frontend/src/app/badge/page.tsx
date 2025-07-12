@@ -16,6 +16,8 @@ interface Badge {
   lastUnlocked?: number;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function BadgesPage() {
   const [badges, setBadges] = useState<Badge[]>([]);
   const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
@@ -23,7 +25,7 @@ export default function BadgesPage() {
   useEffect(() => {
     const fetchBadges = async () => {
       try {
-        const res = await fetchWithAuth("http://localhost:8000/badges/my");
+        const res = await fetchWithAuth(`${API_BASE_URL}/badges/my`);
         const data = await res.json();
         setBadges(data);
       } catch (err) {

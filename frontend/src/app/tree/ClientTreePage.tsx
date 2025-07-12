@@ -41,6 +41,8 @@ interface TreeData {
   created_at: string;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function ClientTreePage() {
   const [trees, setTrees] = useState<TreeData[]>([]);
   const [greenPoints, setGreenPoints] = useState<number>(0);
@@ -62,7 +64,7 @@ export default function ClientTreePage() {
   }
   
   useEffect(() => {
-    fetchWithAuth("http://localhost:8000/badges/my")
+    fetchWithAuth(`${API_BASE_URL}/badges/my`)
       .then((res) => res.json())
       .then((data) => {
         const unlocked = data.filter((b: any) => b.unlocked).length;
@@ -74,14 +76,14 @@ export default function ClientTreePage() {
   }, []);
 
   useEffect(() => {
-    fetchWithAuth(`http://localhost:8000/trees/me`)
+    fetchWithAuth(`${API_BASE_URL}/trees/me`)
       .then(res => res.json())
       .then((data: TreeData[]) => setTrees(data))
       .catch(console.error);
   }, []);
 
   useEffect(() => {
-    fetchWithAuth(`http://localhost:8000/points/me/total`)
+    fetchWithAuth(`${API_BASE_URL}/points/me/total`)
       .then(res => res.json())
       .then(data => setGreenPoints(data.total_points))
       .catch(console.error);
@@ -109,7 +111,7 @@ export default function ClientTreePage() {
 
     try {
       const res = await fetchWithAuth(
-        `http://localhost:8000/trees/${treeId}/water`,
+        `${API_BASE_URL}/trees/${treeId}/water`,
         {
           method: "POST",
           body: JSON.stringify({ amount: 10 }),
@@ -126,7 +128,7 @@ export default function ClientTreePage() {
 
   async function handleCreateTree(type_id: number) {
     try {
-      const res = await fetchWithAuth("http://localhost:8000/trees/", {
+      const res = await fetchWithAuth(`${API_BASE_URL}/trees/`, {
         method: "POST",
         body: JSON.stringify({ type_id }),
       });
@@ -147,7 +149,7 @@ export default function ClientTreePage() {
     if (selectedTreeId === null) return;
     try {
       const res = await fetchWithAuth(
-        `http://localhost:8000/harvest/${selectedTreeId}`,
+        `${API_BASE_URL}/harvest/${selectedTreeId}`,
         {
           method: "POST",
           body: JSON.stringify(data),

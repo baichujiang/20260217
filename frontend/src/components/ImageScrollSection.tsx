@@ -12,13 +12,15 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function ImageScrollSection() {
   const [restaurants, setRestaurants] = useState<RestaurantCardProps[]>([])
 
   useEffect(() => {
     const fetchRestaurantsWithImages = async () => {
       try {
-        const res = await fetch("http://localhost:8000/restaurants/top-sustainable/")
+        const res = await fetch(`${API_BASE_URL}/restaurants/top-sustainable/`)
         if (!res.ok) throw new Error("Failed to fetch restaurants")
         const data = await res.json()
 
@@ -26,7 +28,7 @@ export default function ImageScrollSection() {
           data.map(async (restaurant: any) => {
             try {
               const imgRes = await fetch(
-                `http://localhost:8000/reviews/restaurant/${restaurant.id}/images?limit=1`
+                `${API_BASE_URL}/reviews/restaurant/${restaurant.id}/images?limit=1`
               )
               const imgData = await imgRes.json()
               const image = imgData.length > 0 ? imgData[0].url : "/default-restaurant.png"
