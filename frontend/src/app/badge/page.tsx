@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Header } from "@/components/ui/Header"; // ✅ Shared header
+import { Header } from "@/components/ui/Header";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 interface Badge {
@@ -13,7 +13,7 @@ interface Badge {
   unlocked: boolean;
   currentProgress: number;
   requiredProgress: number;
-  lastUnlocked?: number; // 可选
+  lastUnlocked?: number;
 }
 
 export default function BadgesPage() {
@@ -23,7 +23,7 @@ export default function BadgesPage() {
   useEffect(() => {
     const fetchBadges = async () => {
       try {
-        const res = await fetchWithAuth("http://localhost:8000/badges/my"); // ⛳️ 按需调整路径
+        const res = await fetchWithAuth("http://localhost:8000/badges/my");
         const data = await res.json();
         setBadges(data);
       } catch (err) {
@@ -41,7 +41,9 @@ export default function BadgesPage() {
   };
 
   const totalBadges = badges.length;
-  const totalUnlocked = badges.filter((b) => b.unlocked).length;
+  const totalUnlocked = badges.filter(
+    (b) => b.unlocked && b.currentProgress >= b.requiredProgress
+  ).length;
 
   return (
     <div className="min-h-screen bg-[linear-gradient(to_bottom,_#f0fdf4_35%,_white_40%)]">
@@ -63,7 +65,9 @@ export default function BadgesPage() {
               return (b.lastUnlocked || 0) - (a.lastUnlocked || 0);
             });
 
-          const unlockedCount = categoryBadges.filter((b) => b.unlocked).length;
+          const unlockedCount = categoryBadges.filter(
+            (b) => b.unlocked && b.currentProgress >= b.requiredProgress
+          ).length;
 
           return (
             <div key={category} className="mb-6 bg-white/80 rounded-lg">
@@ -82,41 +86,48 @@ export default function BadgesPage() {
 
               {isOpen && (
                 <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {categoryBadges.map((badge) => (
-                    <div
-                      key={badge.id}
-                      className="border p-3 rounded-lg bg-white shadow-md flex flex-col items-center"
-                    >
-                      <img
-                        src={badge.icon || "/default-badge.png"}
-                        alt={badge.name}
-                        className={`w-16 h-16 mb-2 rounded-full object-cover ${
-                          !badge.unlocked ? "opacity-40 grayscale" : ""
-                        }`}
-                      />
-                      <p className="text-center font-medium text-sm">{badge.name}</p>
-                      <div className="text-center text-xs text-gray-500">
-                        {badge.unlocked
-                          ? "Unlocked"
-                          : badge.currentProgress > 0
-                          ? `${badge.currentProgress} / ${badge.requiredProgress}`
-                          : "Locked 🔒"}
-                      </div>
-                      {badge.currentProgress > 0 && !badge.unlocked && (
+                  {categoryBadges.map((badge) => {
+                    const progressRatio = badge.currentProgress / badge.requiredProgress;
+                    const isProgressFull = progressRatio >= 1;
+
+                    return (
+                      <div
+                        key={badge.id}
+                        className="border p-3 rounded-lg bg-white shadow-md flex flex-col items-center"
+                      >
+                        <img
+                          src={badge.icon || "/default-badge.png"}
+                          alt={badge.name}
+                          className={`w-16 h-16 mb-2 rounded-full object-cover transition ${
+                            !badge.unlocked || !isProgressFull
+                              ? "filter grayscale brightness-75"
+                              : ""
+                          }`}
+                        />
+                        <p className="text-center font-medium text-sm">{badge.name}</p>
+                        <div className="text-center text-xs text-gray-500">
+                          {badge.unlocked && isProgressFull
+                            ? "Unlocked"
+                            : badge.currentProgress > 0
+                            ? `${badge.currentProgress} / ${badge.requiredProgress}`
+                            : "Locked 🔒"}
+                        </div>
+
                         <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-green-500 h-2 rounded-full"
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              badge.unlocked && isProgressFull
+                                ? "bg-yellow-400"
+                                : "bg-gray-300"
+                            }`}
                             style={{
-                              width: `${Math.min(
-                                100,
-                                (badge.currentProgress / badge.requiredProgress) * 100
-                              )}%`,
+                              width: `${Math.min(100, progressRatio * 100)}%`,
                             }}
                           />
                         </div>
-                      )}
-                    </div>
-                  ))}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

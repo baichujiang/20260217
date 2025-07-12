@@ -21,9 +21,12 @@ async def get_my_rewards(
 ):
     result = await db.execute(
         select(RewardDelivery)
+        .options(
+            selectinload(RewardDelivery.tree).selectinload(Tree.type)
+        )
         .where(RewardDelivery.user_id == current_user.id)
         .order_by(RewardDelivery.submitted_at.desc())
-    )
+)
     return result.scalars().all()
 
 
@@ -50,6 +53,8 @@ async def harvest_tree(
     if tree.growth_value < tree.type.goal_growth_value:
         raise HTTPException(status_code=400, detail="Tree is not ready for harvest.")
 
+    gift_type = tree.type.species  # 或者用映射："apple_tree" → "apple"
+
     # 创建奖励记录
     reward = RewardDelivery(
         user_id=current_user.id,
@@ -61,6 +66,7 @@ async def harvest_tree(
         state=data.state,
         phone_number=data.phone_number,
         submitted_at=datetime.utcnow(),
+        gift_type = gift_type
     )
     db.add(reward)
 

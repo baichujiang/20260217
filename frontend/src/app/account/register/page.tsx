@@ -36,11 +36,11 @@ export default function RegisterPage() {
             )
 
             console.log("✅ Backend response:", response.data)
-            setMessage("✅ Registered successfully! Redirecting to home...")
+            setMessage("✅ Registered successfully! Redirecting to login...")
 
             // Wait 3 seconds before redirecting
             setTimeout(() => {
-                router.push("/")
+                router.push("/account")
             }, 3000)
         } catch (error: any) {
             console.error("❌ Registration error:", error)

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Header } from "@/components/ui/Header";
 import { HeaderStats } from "@/components/HeaderStats";
 import { Leaderboard } from "@/components/Leaderboard";
@@ -17,6 +17,15 @@ import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import RewardModal, { AddressFormData } from "@/components/RewardModal";
 import SearchParamHandler from "./SearchParamHandler";
 import { Suspense } from "react";
+import { useRouter } from "next/navigation"; 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+  } from "@/components/ui/dialog";
+  
 
 interface TreeType {
   id: number;
@@ -39,9 +48,30 @@ export default function ClientTreePage() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [selectedTreeId, setSelectedTreeId] = useState<number | null>(null);
-  const [isPouring, setIsPouring] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const router = useRouter();
+  const [badges, setBadges] = useState<number>(0);
+  const kettleRef = useRef<HTMLImageElement | null>(null);
 
+  function triggerKettleAnimation() {
+    if (!kettleRef.current) return;
+    const el = kettleRef.current;
+    el.classList.remove("animate-pour");
+    void el.offsetWidth; // 触发重新渲染
+    el.classList.add("animate-pour");
+  }
+  
+  useEffect(() => {
+    fetchWithAuth("http://localhost:8000/badges/my")
+      .then((res) => res.json())
+      .then((data) => {
+        const unlocked = data.filter((b: any) => b.unlocked).length;
+        setBadges(unlocked);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch badges", err);
+      });
+  }, []);
 
   useEffect(() => {
     fetchWithAuth(`http://localhost:8000/trees/me`)
@@ -76,8 +106,6 @@ export default function ClientTreePage() {
     greenPoints >= 10;
 
   async function handleWater(treeId: number, idx: number) {
-    setIsPouring(false);
-    void requestAnimationFrame(() => setIsPouring(true));
 
     try {
       const res = await fetchWithAuth(
@@ -93,9 +121,7 @@ export default function ClientTreePage() {
       setGreenPoints(prev => prev - 10);
     } catch (e) {
       console.error(e);
-    } finally {
-      setTimeout(() => setIsPouring(false), 1200);
-    }
+    } 
   }
 
   async function handleCreateTree(type_id: number) {
@@ -133,6 +159,7 @@ export default function ClientTreePage() {
       setShowRewardModal(false);
       setSelectedTreeId(null);
       setSuccessMessage("Harvest success! The gift will be delivered within a few days");
+
     } catch (e) {
       console.error(e);
       alert("Failed to submit reward address");
@@ -154,95 +181,149 @@ export default function ClientTreePage() {
       </Suspense>
 
       <Header />
+      <button
+        onClick={() => router.push("/myrewards")}
+        className="fixed top-36 left-4 z-50 p-0 bg-transparent rounded-full animate-float transition active:scale-95 hover:scale-105"
+        aria-label="My Rewards"
+        >
+        <Image
+            src="/rewards.png"  // 确保文件在 public/rewards.png
+            alt="My Rewards"
+            width={80}
+            height={80}
+            className="drop-shadow-lg"
+        />
+        </button>
+
+
+      
       <section className="relative">
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
         <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
         <div className="p-4 pb-0">
-          <HeaderStats badges={10} greenPoints={greenPoints} avatarUrl="/avatar-default.svg" />
+          <HeaderStats badges={badges} greenPoints={greenPoints} avatarUrl="/avatar-default.svg" />
+        </div>
+        {trees.length === 0 ? (
+                <div className="flex flex-col items-center justify-center text-center mt-24 px-4 relative">
+                {/* 灰色树苗图 */}
+                <Image
+                    src="/empty-tree.png"
+                    alt="No trees"
+                    width={150}
+                    height={150}
+                    className="mb-4 opacity-70 grayscale"
+                />
 
-          <div className="relative w-full mt-4">
-            {currentTree && (
-              <div className="absolute top-0 right-4 z-10">
-                <button
-                  onClick={() => handleWater(currentTree.id, activeIndex)}
-                  disabled={!canWater}
-                  className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium ${
-                    canWater
-                      ? "bg-transparent text-white"
-                      : "grayscale opacity-50 text-gray-500 cursor-not-allowed"
-                  }`}
-                  title={
-                    greenPoints < 10
-                      ? `Not enough points (${greenPoints})`
-                      : `Water this tree`
-                  }
-                >
-                  <Image
+                {/* 简洁提示文字 */}
+                <p className="text-base text-gray-700 mb-10 font-medium leading-relaxed max-w-xs">
+                Tap the <span className="text-green-700 font-bold">Greenpoints</span> button at the top right to start your green journey!
+                </p>
+
+
+                {/* 引导箭头 + 说明 */}
+                <div className="absolute -top-20 right-2 flex flex-col items-center animate-bounce">
+                    <Image src="/arrow-up.png" alt="Arrow" width={36} height={36} />
+                    <p className="mt-1 px-2 py-1 text-xs font-semibold text-green-700 bg-yellow-100 rounded-md shadow">
+                    Click here to plant a tree
+                    </p>
+                </div>
+                </div>
+
+
+        ) : (
+            <div className="relative w-full mt-4">
+              {currentTree && (
+                <div className="absolute top-0 right-4 z-10">
+                  <button
+                    onClick={() => {
+                        triggerKettleAnimation();
+                        handleWater(currentTree.id, activeIndex);
+                      }}
+                    disabled={!canWater}
+                    className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm font-medium ${
+                      canWater
+                        ? "bg-transparent text-white"
+                        : "grayscale opacity-50 text-gray-500 cursor-not-allowed"
+                    }`}
+                    title={
+                      greenPoints < 10
+                        ? `Not enough points (${greenPoints})`
+                        : `Water this tree`
+                    }
+                  >
+                    <img
+                    ref={kettleRef}
                     src="/kettle.png"
                     alt="Watering Kettle"
                     width={96}
                     height={96}
-                    className={isPouring ? "animate-pour" : ""}
-                  />
-                </button>
-              </div>
-            )}
+                    className="transition" // 添加过渡效果，初始不加 animate-pour，由 trigger 函数动态添加
+                    />
 
-            <button onClick={goPrev} className="absolute top-1/2 left-2 z-10 p-2">❮</button>
-
-            <Carousel setApi={setEmblaApi} opts={{ loop: true }}>
-              <CarouselContent className="p-4 pb-6">
-                {trees.map((tree, idx) => {
-                  const { id, type, growth_value } = tree;
-                  const max = type.goal_growth_value;
-                  const src = type.image_src;
-                  const percent = Math.min(100, Math.max(0, (growth_value / max) * 100));
-                  return (
-                    <CarouselItem
-                      key={id}
-                      className="relative flex flex-col items-center justify-end space-y-4 min-h-[400px]"
-                    >
-                      <div className="relative w-64 h-64">
-                        <Image
-                          src={src}
-                          alt={type.species}
-                          fill
-                          className="object-cover object-bottom rounded-lg"
-                          priority
-                        />
-                      </div>
-                      <div className="relative w-full px-4">
-                        {growth_value >= max && (
-                          <div className="absolute -top-12 right-4 flex items-center gap-0 animate-bounce">
-                            <Image src="/fruit.png" alt="Fruit" width={64} height={64} />
-                            <button
-                              onClick={() => openHarvestModal(id)}
-                              className="text-md bg-yellow-400 rounded px-1 py-1 font-semibold text-white"
-                            >
-                              Harvest
-                            </button>
+                  </button>
+                </div>
+              )}
+  
+              <button onClick={goPrev} className="absolute top-1/2 left-2 z-10 p-2">❮</button>
+              <div className="relative w-full -mt-4">
+              <Carousel setApi={setEmblaApi} opts={{ loop: true }}>
+                <CarouselContent className="p-4 pb-6">
+                  {trees.map((tree, idx) => {
+                    const { id, type, growth_value } = tree;
+                    const max = type.goal_growth_value;
+                    const src = type.image_src;
+                    const percent = Math.min(100, Math.max(0, (growth_value / max) * 100));
+                    return (
+                      <CarouselItem
+                        key={id}
+                        className="relative flex flex-col items-center justify-end space-y-4 min-h-[400px]"
+                      >
+                        <div className="relative w-64 h-64">
+                          <Image
+                            src={src}
+                            alt={type.species}
+                            fill
+                            className="object-cover object-center rounded-lg"
+                            priority
+                          />
+                        </div>
+                        <div className="relative w-full px-4">
+                          {growth_value >= max && (
+                            <div className="absolute -top-12 right-4 flex items-center gap-0 animate-bounce">
+                              <Image src="/fruit.png" alt="Fruit" width={64} height={64} />
+                              <button
+                                onClick={() => openHarvestModal(id)}
+                                className="text-md bg-yellow-400 rounded px-1 py-1 font-semibold text-white"
+                              >
+                                Harvest
+                              </button>
+                            </div>
+                          )}
+                          <div className="relative w-full -mt-0 mb-0">
+                          <Progress
+                            value={percent}
+                            size="md"
+                            indicatorClassName="bg-green-500"
+                            className="bg-white shadow-md"
+                          />
                           </div>
-                        )}
-                        <Progress
-                          value={percent}
-                          size="md"
-                          indicatorClassName="bg-green-500"
-                          className="bg-white shadow-md"
-                        />
-                        <p className="text-center mt-2 text-lg font-semibold text-gray-900">
-                          Growth: {growth_value} / {max}
-                        </p>
-                      </div>
-                    </CarouselItem>
-                  );
-                })}
-              </CarouselContent>
-              <CarouselDots />
-            </Carousel>
-
-            <button onClick={goNext} className="absolute top-1/2 right-2 z-10 p-2">❯</button>
-          </div>
-        </div>
+                          <p className="text-center mt-2 mb-2 text-lg font-semibold text-gray-900">
+                            Growth: {growth_value} / {max}
+                          </p>
+                        </div>
+                      </CarouselItem>
+                    );
+                  })}
+                </CarouselContent>
+                <div className="relative w-full mb-4">
+                <CarouselDots />
+                </div>
+              </Carousel>
+              </div>
+  
+              <button onClick={goNext} className="absolute top-1/2 right-2 z-10 p-2">❯</button>
+            </div>
+        )}
       </section>
 
       <div className="-mt-6 px-4" />
@@ -253,6 +334,36 @@ export default function ClientTreePage() {
         onClose={() => setShowRewardModal(false)}
         onSubmit={handleHarvestSubmit}
       />
+
+        <Dialog
+        open={!!successMessage}
+        onOpenChange={(open) => {
+            if (!open) setSuccessMessage(null);
+        }}
+        >
+        <DialogContent className="max-w-sm">
+            <DialogHeader>
+            <DialogTitle className="text-green-700 text-lg">
+                Harvest Success!
+            </DialogTitle>
+            </DialogHeader>
+            <div className="text-gray-700 text-sm">
+            The gift will be delivered within a few days.
+            </div>
+            <DialogFooter className="mt-4">
+            <button
+                onClick={() => {
+                setSuccessMessage(null);
+                router.push("/myrewards");
+                }}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+            >
+                Go to My Rewards
+            </button>
+            </DialogFooter>
+        </DialogContent>
+        </Dialog>
+
     </div>
   );
 }
