@@ -37,4 +37,5 @@ export interface Comment {
   comment: string;
   created_at: string;
   images: ReviewImage[];
+  avatar_url: string;
 }

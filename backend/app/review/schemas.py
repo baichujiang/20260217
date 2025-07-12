@@ -70,6 +70,7 @@ class ReviewRead(ReviewBase):
 class ReviewCommentRead(BaseModel):
     review_id: UUID
     user_name: str
+    avatar_url: str
     created_at: str
     comment: str
     images: List[ReviewImageRead]
