@@ -6,6 +6,8 @@ import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/Header"
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function RegisterPage() {
     const [formData, setFormData] = useState({ username: "", password: "" })
     const [loading, setLoading] = useState(false)
@@ -23,7 +25,7 @@ export default function RegisterPage() {
 
         try {
             const response = await axios.post(
-                "http://127.0.0.1:8000/auth/register",
+                `${API_BASE_URL}/auth/register`,
                 {
                     username: formData.username,
                     password: formData.password,
