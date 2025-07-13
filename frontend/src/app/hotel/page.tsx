@@ -11,6 +11,7 @@ export default function HotelPage() {
     const [places, setPlaces] = useState<string[]>([""]);
     const [focusedInput, setFocusedInput] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [randomTimes, setRandomTimes] = useState<Record<string, Record<string, number>>>({});
 
     const allDestinations = [
         "Marienplatz",
@@ -34,47 +35,33 @@ export default function HotelPage() {
         "BMW Welt": [48.1766, 11.5566],
     };
 
-    const hotels = [
+    const hotels: { name: string; coords: [number, number] }[] = [
         {
             name: "Hotel Königshof",
-            description: "Luxury stay near Marienplatz.",
-            rating: 4.7,
             coords: [48.1391, 11.5658],
         },
         {
             name: "NH Collection München",
-            description: "Perfect for city explorers.",
-            rating: 4.5,
             coords: [48.1366, 11.5720],
         },
         {
             name: "Leonardo Royal Hotel",
-            description: "Close to Olympiapark and BMW Welt.",
-            rating: 4.3,
             coords: [48.1790, 11.5530],
         },
         {
             name: "Holiday Inn Munich City Centre",
-            description: "Modern hotel by the Deutsches Museum.",
-            rating: 4.4,
             coords: [48.1290, 11.5940],
         },
         {
             name: "Motel One München-Deutsches Museum",
-            description: "Affordable comfort in the heart of Munich.",
-            rating: 4.2,
             coords: [48.1260, 11.5840],
         },
         {
             name: "Hilton Munich Park",
-            description: "Overlooking the English Garden.",
-            rating: 4.6,
             coords: [48.1570, 11.5980],
         },
         {
             name: "Pullman Munich",
-            description: "Elegant hotel near Leopoldstrasse.",
-            rating: 4.3,
             coords: [48.1650, 11.5900],
         },
     ];
@@ -197,7 +184,22 @@ export default function HotelPage() {
                             hotels={[]} // No hotels in step 2
                             zoom={13}
                         />
-                        <Button onClick={() => setStep(3)} className="w-full">
+                        <Button
+                            onClick={() => {
+                                // Generate random times per hotel per destination
+                                const times: Record<string, Record<string, number>> = {};
+                                hotels.forEach((hotel) => {
+                                    times[hotel.name] = {};
+                                    selectedDestinations.forEach((dest) => {
+                                        times[hotel.name][dest.name] =
+                                            Math.floor(Math.random() * 21) + 5;
+                                    });
+                                });
+                                setRandomTimes(times);
+                                setStep(3);
+                            }}
+                            className="w-full"
+                        >
                             Show Recommendations
                         </Button>
                     </div>
@@ -228,17 +230,16 @@ export default function HotelPage() {
                                             className="border rounded-lg p-4 hover:shadow transition bg-gray-50"
                                         >
                                             <h3 className="font-medium text-gray-800">
-                                                {hotel.name}{" "}
-                                                <span className="text-yellow-500">★ {hotel.rating}</span>
+                                                {hotel.name}
                                             </h3>
-                                            <p className="text-gray-600">{hotel.description}</p>
                                             <ul className="text-sm text-gray-500 mt-2 space-y-1">
                                                 {selectedDestinations.map((dest, destIdx) => {
-                                                    // Fake times: 5–25 min randomly
-                                                    const fakeMinutes = Math.floor(Math.random() * 21) + 5;
+                                                    const minutes =
+                                                        randomTimes[hotel.name]?.[dest.name] ??
+                                                        Math.floor(Math.random() * 21) + 5;
                                                     return (
                                                         <li key={destIdx}>
-                                                            ~{fakeMinutes} min to {dest.name}
+                                                            ~{minutes} min to {dest.name}
                                                         </li>
                                                     );
                                                 })}
@@ -250,6 +251,7 @@ export default function HotelPage() {
                                     onClick={() => {
                                         setStep(1);
                                         setPlaces([""]);
+                                        setRandomTimes({});
                                     }}
                                     className="w-full"
                                 >
