@@ -8,6 +8,8 @@ import { Header } from "@/components/Header";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function AccountPage() {
     const router = useRouter();
 
@@ -55,7 +57,7 @@ export default function AccountPage() {
             params.append("password", formData.password);
 
             const response = await axios.post(
-                "http://127.0.0.1:8000/auth/token",
+                `${API_BASE_URL}/auth/token`,
                 params,
                 {
                     headers: {
@@ -111,7 +113,7 @@ export default function AccountPage() {
                         <p className="text-center text-sm mt-4 text-red-600">{message}</p>
                     )}
                     <div className="text-center mt-4 text-sm">
-                        Don’t have an account?{" "}
+                        Don't have an account?{" "}
                         <button
                             type="button"
                             onClick={() => router.push("/account/register")}
