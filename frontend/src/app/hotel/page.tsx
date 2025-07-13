@@ -13,6 +13,7 @@ export default function HotelPage() {
     const [error, setError] = useState<string | null>(null);
     const [randomTimes, setRandomTimes] = useState<Record<string, Record<string, number>>>({});
 
+//Destinations has been decided//
     const allDestinations = [
         "Marienplatz",
         "TUM Garching",
@@ -61,6 +62,7 @@ export default function HotelPage() {
             coords: [48.1570, 11.5980],
         },
         {
+
             name: "Pullman Munich",
             coords: [48.1650, 11.5900],
         },
