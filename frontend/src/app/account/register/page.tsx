@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import axios from "axios"
 import { Button } from "@/components/ui/button"
-import { Header } from "@/components/ui/Header"
+import { Header } from "@/components/Header"
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({ username: "", password: "" })
@@ -35,17 +35,16 @@ export default function RegisterPage() {
                 }
             )
 
-            console.log("✅ Backend response:", response.data)
-            setMessage("✅ Registered successfully! Redirecting to login...")
+            setMessage("Registered successfully! Redirecting to login...")
 
             // Wait 3 seconds before redirecting
             setTimeout(() => {
                 router.push("/account")
             }, 3000)
         } catch (error: any) {
-            console.error("❌ Registration error:", error)
+            console.error("Registration error:", error)
             setMessage(
-                error.response?.data?.detail || "❌ Registration failed. Try again."
+                error.response?.data?.detail || "Registration failed. Try again."
             )
         } finally {
             setLoading(false)

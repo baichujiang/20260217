@@ -34,14 +34,14 @@ async def create_review_route(
     food_rating: int = Form(...),
     service_rating: int = Form(...),
     environment_rating: int = Form(...),
-    sustainablility_rating: int = Form(...),
+    sustainability_rating: int = Form(...),
     sourcing_rating: int = Form(...),
     waste_rating: int = Form(...),
     menu_rating: int = Form(...),
     energy_rating: int = Form(...),
     comment: Optional[str] = Form(None),
     tag_ids: Optional[str] = Form("[]"),
-    files: List[UploadFile] = File([]),
+    files: Optional[List[UploadFile]] = File(None),
     user_id: int = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
     request: Request = None
@@ -53,7 +53,7 @@ async def create_review_route(
             food_rating=food_rating,
             service_rating=service_rating,
             environment_rating=environment_rating,
-            sustainablility_rating=sustainablility_rating,
+            sustainability_rating=sustainability_rating,
             sourcing_rating=sourcing_rating,
             waste_rating=waste_rating,
             menu_rating=menu_rating,
@@ -66,8 +66,9 @@ async def create_review_route(
 
     try:
         review = await create_review(db, review_data, user_id)
-        for file in files:
-            await save_and_create_review_image(db, review.id, file)
+        if files:
+            for file in files:
+                await save_and_create_review_image(db, review.id, file)
         await db.commit()
         return map_review_to_reviewread_schema(review, request)
     except Exception as e:
@@ -137,10 +138,11 @@ async def get_comments(
 @router.get("/restaurant/{restaurant_id}/images", response_model=List[ReviewImageRead])
 async def get_review_images_route(
     restaurant_id: int,
+    limit: int = 6,
     db: AsyncSession = Depends(get_db),
     request: Request = None
 ):
-    images = await get_review_images_by_restaurant(db, restaurant_id)
+    images = await get_review_images_by_restaurant(db, restaurant_id, limit)
     return [build_image_response(img, request) for img in images]
 
 

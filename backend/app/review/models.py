@@ -24,7 +24,7 @@ class Review(Base):
     service_rating = Column(Integer, nullable=False)
     environment_rating = Column(Integer, nullable=False)
 
-    sustainablility_rating = Column(Integer, nullable=False)
+    sustainability_rating = Column(Integer, nullable=False)
     sourcing_rating = Column(Integer, nullable=False)
     waste_rating = Column(Integer, nullable=False)
     menu_rating = Column(Integer, nullable=False)

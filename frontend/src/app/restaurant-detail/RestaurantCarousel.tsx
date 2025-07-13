@@ -34,17 +34,18 @@ export default function RestaurantCarousel() {
     const fetchImages = async () => {
       try {
         const res = await fetch(`${API_BASE_URL}/reviews/restaurant/${id}/images`);
-        if (!res.ok) throw new Error('Failed to fetch images');
+
+        if (!res.ok) throw new Error("Failed to fetch images");
 
         const data: ReviewImage[] = await res.json();
-        const limited = data.slice(0, 6);
 
-        setImages(limited.length > 0 ? limited : [
-          { id: 'fallback', url: '/default-restaurant.png', uploaded_at: '' },
-        ]);
-
+        setImages(
+          data.length > 0
+            ? data
+            : [{ id: "fallback", url: "/default-restaurant.png", uploaded_at: "" }]
+        );
       } catch {
-        setImages([{ id: 'fallback', url: '/default-restaurant.png', uploaded_at: '' }]);
+        setImages([{ id: "fallback", url: "/default-restaurant.png", uploaded_at: "" }]);
       } finally {
         setLoading(false);
       }

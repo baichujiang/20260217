@@ -24,6 +24,11 @@ async def search_restaurants(
     return results
 
 
+@router.get("/top-sustainable", response_model=List[schemas.RestaurantOut])
+async def top_sustainable(limit: int = 5, db: AsyncSession = Depends(get_db)):
+    return await services.get_top_sustainable_restaurants(db, limit)
+
+
 @router.get("/{restaurant_id}", response_model=schemas.RestaurantOut)
 async def read_restaurant(
     restaurant_id: int,

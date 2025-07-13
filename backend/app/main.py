@@ -29,6 +29,7 @@ from .users.routes import router as users_router
 from .harvest.routes import router as harvest_router
 from .review.routes import router as review_router
 from .share.routes import router as share_router
+from .core.config import settings
 
 
 @asynccontextmanager
@@ -39,7 +40,7 @@ async def lifespan(app: FastAPI):
     await migrate_restaurants()
     print("[Startup] Migrating tree types data...")
     await migrate_tree_types()
-    print("[Startup] Migrating badge definitions...")         # ✅ 添加这两行
+    print("[Startup] Migrating badge definitions...")
     await migrate_badge_definitions()   
     print("[Startup] Migrating review tags...")
     await migrate_review_tags()
@@ -53,7 +54,7 @@ app.mount("/review-images", StaticFiles(directory="uploads/review_images"), name
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[settings.FRONTEND_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

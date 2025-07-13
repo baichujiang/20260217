@@ -7,7 +7,7 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
-import { Header } from "@/components/ui/Header" // ✅ Shared header
+import { Header } from "@/components/Header" // ✅ Shared header
 
 const categories = [
   {

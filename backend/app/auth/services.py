@@ -20,7 +20,10 @@ async def create_user(db: AsyncSession, user_data: UserCreate) -> User:
         raise HTTPException(status_code=400, detail="Username already taken")
 
     # Create User
-    user = User(username=user_data.username)
+    user = User(
+        username=user_data.username,
+        avatar_url="/avatars/default.svg"
+    )
     db.add(user)
     await db.commit()
     await db.refresh(user)

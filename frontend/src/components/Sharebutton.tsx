@@ -10,6 +10,8 @@ interface ShareButtonProps {
   shareType: "watering" | "review" | "bigcard" | string;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function ShareButton({
   title,
   text,
@@ -35,7 +37,7 @@ export default function ShareButton({
       await navigator.share({ title, text, url: shareUrl });
 
       if (!sharedToday) {
-        const res = await fetchWithAuth(`http://localhost:8000/share/${shareType}`, {
+        const res = await fetchWithAuth(`${API_BASE_URL}/share/${shareType}`, {
           method: "POST",
         });
         if (!res.ok) throw new Error("Failed to record share");

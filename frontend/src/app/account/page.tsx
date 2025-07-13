@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 
@@ -17,17 +17,27 @@ export default function AccountPage() {
     });
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const [authChecked, setAuthChecked] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
+
         if (token) {
-            const decoded = jwtDecode<{ exp: number }>(token);
-            if (decoded.exp * 1000 > Date.now()) {
-                router.push("/account/profile");
-            } else {
+            try {
+                const decoded = jwtDecode<{ exp: number }>(token);
+                if (decoded.exp * 1000 > Date.now()) {
+                    router.push("/account/profile");
+                    return;
+                } else {
+                    localStorage.removeItem("token");
+                }
+            } catch (error) {
+                console.error("Invalid token", error);
                 localStorage.removeItem("token");
             }
         }
+
+        setAuthChecked(true);
     }, [router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,6 +75,8 @@ export default function AccountPage() {
             setLoading(false);
         }
     };
+
+    if (!authChecked) return null; // prevent UI flash before auth check
 
     return (
         <main className="min-h-screen bg-white">

@@ -88,7 +88,7 @@ const handleSubmit = async () => {
   formData.append("food_rating", String(ratings["Food"] || 0));
   formData.append("service_rating", String(ratings["Service"] || 0));
   formData.append("environment_rating", String(ratings["Environment"] || 0));
-  formData.append("sustainablility_rating", String(ratings["Sustainability"] || 0));
+  formData.append("sustainability_rating", String(ratings["Sustainability"] || 0));
   formData.append("sourcing_rating", String(ratings["Sourcing"] || 0));
   formData.append("waste_rating", String(ratings["Waste"] || 0));
   formData.append("menu_rating", String(ratings["Menu"] || 0));
@@ -124,7 +124,6 @@ const handleSubmit = async () => {
     setSelectedTags([]);
     setSelectedImages([]);
     setImagePreviews([]);
-    console.log("Review response:", data);
   } catch (error) {
     toast("Failed to submit review");
     console.error(error);
@@ -246,7 +245,7 @@ const tagGroups = tags.reduce<Record<string, Tag[]>>((acc, tag) => {
       <div className="fixed bottom-0 left-0 w-full p-4 sm:static sm:border-none sm:p-0">
         <div className="max-w-md mx-auto">
           <Button
-            className="w-full bg-green-600 text-white hover:bg-green-700"
+            className="w-full bg-[#57cc99] text-white hover:bg-green-700"
             onClick={handleSubmit}
             disabled={isSubmitting}
           >

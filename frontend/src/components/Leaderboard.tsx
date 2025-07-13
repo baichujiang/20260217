@@ -11,6 +11,8 @@ interface LeaderboardEntry {
 
 type Period = 'daily' | 'week' | 'total';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export const Leaderboard: React.FC = () => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [period, setPeriod] = useState<Period>('daily');
@@ -21,11 +23,10 @@ export const Leaderboard: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:8000/trees/leaderboard?period=${period}`);
+      const res = await fetch(`${API_BASE_URL}/leaderboard?period=${period}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
       const data: LeaderboardEntry[] = await res.json();
       setEntries(data);
-      console.log("🏁 leaderboard data fetched:", data);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch leaderboard');
     } finally {

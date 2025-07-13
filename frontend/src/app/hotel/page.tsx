@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Header } from "@/components/ui/Header"
+import { Header } from "@/components/Header"
 
 export default function HotelPage() {
     const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
