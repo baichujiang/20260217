@@ -1,4 +1,3 @@
-// components/Leaderboard.tsx
 import React, { useState, useEffect } from 'react';
 import Image from "next/image";
 
@@ -23,7 +22,7 @@ export const Leaderboard: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/leaderboard?period=${period}`);
+      const res = await fetch(`${API_BASE_URL}/trees/leaderboard?period=${period}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
       const data: LeaderboardEntry[] = await res.json();
       setEntries(data);
@@ -35,7 +34,7 @@ export const Leaderboard: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData(); // 初次加载
+    fetchData();
   }, [period]);
 
   const renderTabs = () => (
@@ -55,7 +54,7 @@ export const Leaderboard: React.FC = () => {
   const renderList = () => {
     if (loading) return <p>Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
-    if (entries.length === 0) return <p>暂无数据</p>;
+    if (entries.length === 0) return <p>No data</p>;
 
     return (
       <ol className="divide-y divide-gray-200">

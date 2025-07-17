@@ -219,8 +219,8 @@ async def get_review_images_by_review(db: AsyncSession, review_id: UUID) -> List
     return await review.images
 
 
-def get_signed_url(path: str, expires_in: int = SIGNED_URL_EXPIRY) -> str:
-    result = supabase.storage.from_(SUPABASE_BUCKET).create_signed_url(path, expires_in)
+def get_public_url(path: str) -> str:
+    result = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(path)
     if "error" in result and result["error"]:
         raise HTTPException(status_code=500, detail="Failed to generate signed URL: " + result["error"]["message"])
-    return result["signedURL"]
+    return result

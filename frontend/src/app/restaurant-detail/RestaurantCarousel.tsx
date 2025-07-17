@@ -77,6 +77,7 @@ export default function RestaurantCarousel() {
                     priority={index === 0}
                     onClick={() => setFullscreenImage(img.url)}
                     className="h-full w-full rounded-lg object-cover cursor-pointer hover:opacity-80 transition"
+                    unoptimized
                   />
                 </AspectRatio>
               </div>
@@ -98,6 +99,7 @@ export default function RestaurantCarousel() {
                 alt="Full review image"
                 fill
                 className="object-contain"
+                unoptimized
               />
             </div>
           )}

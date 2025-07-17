@@ -2,13 +2,13 @@ from fastapi import Request
 
 from .schemas import ReviewRead, ReviewTagRead, ReviewImageRead
 from .models import Review, ReviewImage
-from .services import get_signed_url
+from .services import get_public_url
 
 
 def build_image_response(image: ReviewImage):
     return {
         "id": image.id,
-        "url": get_signed_url(image.file_path),
+        "url": get_public_url(image.file_path),
         "uploaded_at": image.uploaded_at,
     }
 

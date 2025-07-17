@@ -104,6 +104,7 @@ export default function CommentCards({ comments, tags }: CommentCardsProps) {
                             fill
                             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
                             className="object-cover"
+                            unoptimized
                           />
                         </div>
                       </DialogTrigger>
@@ -117,6 +118,7 @@ export default function CommentCards({ comments, tags }: CommentCardsProps) {
                               alt="Full review image"
                               fill
                               className="object-contain"
+                              unoptimized
                             />
                           </div>
                         )}
