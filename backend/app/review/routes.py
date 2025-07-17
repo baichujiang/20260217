@@ -33,7 +33,6 @@ async def create_review_route(
     food_rating: int = Form(...),
     service_rating: int = Form(...),
     environment_rating: int = Form(...),
-    sustainability_rating: int = Form(...),
     sourcing_rating: int = Form(...),
     waste_rating: int = Form(...),
     menu_rating: int = Form(...),
@@ -44,6 +43,7 @@ async def create_review_route(
     user_id: int = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):
+    sustainability_rating= (sourcing_rating + menu_rating + waste_rating + energy_rating) / 4
     try:
         review_data = ReviewCreate(
             restaurant_id=restaurant_id,
