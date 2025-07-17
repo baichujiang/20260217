@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import { HeaderStats } from "@/components/HeaderStats";
 import { Leaderboard } from "@/components/Leaderboard";
 import { Progress } from "@/components/ui/progress";
@@ -41,11 +41,7 @@ interface TreeData {
   created_at: string;
 }
 
-interface User {
-    avatar_url?: string;
-  }
-
-  
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function ClientTreePage() {
   const [trees, setTrees] = useState<TreeData[]>([]);
@@ -67,16 +63,9 @@ export default function ClientTreePage() {
     void el.offsetWidth; 
     el.classList.add("animate-pour");
   }
-
-  useEffect(() => {
-    fetchWithAuth("http://localhost:8000/users/me")
-      .then((res) => res.json())
-      .then((data: User) => setUser(data))
-      .catch((err) => console.error("Failed to fetch user", err));
-  }, []);
   
   useEffect(() => {
-    fetchWithAuth("http://localhost:8000/badges/my")
+    fetchWithAuth(`${API_BASE_URL}/badges/my`)
       .then((res) => res.json())
       .then((data) => {
         setBadges(data); 
@@ -87,14 +76,14 @@ export default function ClientTreePage() {
   }, []);
 
   useEffect(() => {
-    fetchWithAuth(`http://localhost:8000/trees/me`)
+    fetchWithAuth(`${API_BASE_URL}/trees/me`)
       .then(res => res.json())
       .then((data: TreeData[]) => setTrees(data))
       .catch(console.error);
   }, []);
 
   useEffect(() => {
-    fetchWithAuth(`http://localhost:8000/points/me/total`)
+    fetchWithAuth(`${API_BASE_URL}/points/me/total`)
       .then(res => res.json())
       .then(data => setGreenPoints(data.total_points))
       .catch(console.error);
@@ -121,7 +110,7 @@ export default function ClientTreePage() {
   async function handleWater(treeId: number, idx: number) {
     try {
       const res = await fetchWithAuth(
-        `http://localhost:8000/trees/${treeId}/water`,
+        `${API_BASE_URL}/trees/${treeId}/water`,
         {
           method: "POST",
           body: JSON.stringify({ amount: 10 }),
@@ -138,7 +127,7 @@ export default function ClientTreePage() {
 
   async function handleCreateTree(type_id: number) {
     try {
-      const res = await fetchWithAuth("http://localhost:8000/trees/", {
+      const res = await fetchWithAuth(`${API_BASE_URL}/trees/`, {
         method: "POST",
         body: JSON.stringify({ type_id }),
       });
@@ -159,7 +148,7 @@ export default function ClientTreePage() {
     if (selectedTreeId === null) return;
     try {
       const res = await fetchWithAuth(
-        `http://localhost:8000/harvest/${selectedTreeId}`,
+        `${API_BASE_URL}/harvest/${selectedTreeId}`,
         {
           method: "POST",
           body: JSON.stringify(data),

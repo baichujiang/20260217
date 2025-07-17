@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ReviewForm from '@/app/review/ReviewForm';
-import { Header } from '@/components/ui/Header';
+import { Header } from '@/components/Header';
 import { ReviewFormProps, Tag } from '@/types/review';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
