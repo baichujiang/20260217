@@ -4,15 +4,9 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '8000',
-        pathname: '/review-images/**',
-      },
-      {
         protocol: 'https',
-        hostname: 'your-api-domain.com', // TODO: production url
-        pathname: '/review-images/**',
+        hostname: 'gqqfqdbehqujcdqsudgh.supabase.co',
+        pathname: '/storage/v1/object/sign/**',
       },
     ],
   },

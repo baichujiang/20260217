@@ -5,8 +5,6 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
-from .utils import build_image_response, map_review_to_reviewread_schema
-
 from .schemas import ReviewCreate, ReviewRead, ReviewTagRead, ReviewCommentRead, ReviewImageRead
 from .services import (
     create_review,
@@ -18,8 +16,9 @@ from .services import (
     get_all_review_tags,
     get_comments_by_restaurant,
     save_and_create_review_image,
-    get_review_images_by_restaurant
+    get_review_images_by_restaurant,
 )
+from .utils import build_image_response, map_review_to_reviewread_schema
 from ..auth.services import get_current_user_id
 from ..core.database import get_db
 
@@ -44,7 +43,6 @@ async def create_review_route(
     files: Optional[List[UploadFile]] = File(None),
     user_id: int = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
-    request: Request = None
 ):
     try:
         review_data = ReviewCreate(
@@ -70,7 +68,7 @@ async def create_review_route(
             for file in files:
                 await save_and_create_review_image(db, review.id, file)
         await db.commit()
-        return map_review_to_reviewread_schema(review, request)
+        return map_review_to_reviewread_schema(review)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save review: {str(e)}")
 
@@ -84,55 +82,50 @@ async def get_all_review_tags_route(db: AsyncSession = Depends(get_db)):
 async def get_review_route(
     review_id: UUID,
     db: AsyncSession = Depends(get_db),
-    request: Request = None,
 ):
     review = await get_review(db, review_id)
     if not review:
         raise HTTPException(status_code=404, detail="Review not found")
-    return map_review_to_reviewread_schema(review, request)
+    return map_review_to_reviewread_schema(review)
 
 
 @router.get("/{review_id}/images", response_model=List[ReviewImageRead])
 async def get_images_for_review(
     review_id: UUID,
     db: AsyncSession = Depends(get_db),
-    request: Request = None
 ):
     images = await get_review_images_by_review(db, review_id)
 
     if not images:
         raise HTTPException(status_code=404, detail="No images found for this review")
 
-    return [ReviewImageRead(**build_image_response(img, request)) for img in images]
+    return [ReviewImageRead(**build_image_response(img)) for img in images]
 
 
 @router.get("/user/me", response_model=List[ReviewRead])
 async def get_reviews_by_current_user(
     user_id: int = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
-    request: Request = None
 ):
     reviews = await get_reviews_by_user(db, user_id)
-    return [map_review_to_reviewread_schema(r, request) for r in reviews]
+    return [map_review_to_reviewread_schema(r) for r in reviews]
 
 
 @router.get("/restaurant/{restaurant_id}", response_model=List[ReviewRead])
 async def get_reviews_by_restaurant_route(
     restaurant_id: int,
     db: AsyncSession = Depends(get_db),
-    request: Request = None
 ):
     reviews = await get_reviews_by_restaurant(db, restaurant_id)
-    return [map_review_to_reviewread_schema(r, request) for r in reviews]
+    return [map_review_to_reviewread_schema(r) for r in reviews]
 
 
 @router.get("/restaurant/{restaurant_id}/comments", response_model=List[ReviewCommentRead])
 async def get_comments(
     restaurant_id: int,
     db: AsyncSession = Depends(get_db),
-    request: Request = None
 ):
-    return await get_comments_by_restaurant(db, restaurant_id, request)
+    return await get_comments_by_restaurant(db, restaurant_id)
 
 
 @router.get("/restaurant/{restaurant_id}/images", response_model=List[ReviewImageRead])
@@ -140,10 +133,9 @@ async def get_review_images_route(
     restaurant_id: int,
     limit: int = 6,
     db: AsyncSession = Depends(get_db),
-    request: Request = None
 ):
     images = await get_review_images_by_restaurant(db, restaurant_id, limit)
-    return [build_image_response(img, request) for img in images]
+    return [build_image_response(img) for img in images]
 
 
 @router.delete("/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
