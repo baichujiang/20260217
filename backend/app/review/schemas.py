@@ -72,6 +72,8 @@ class ReviewCommentRead(BaseModel):
     avatar_url: str
     created_at: str
     comment: str
+    normal_rating: Rating
+    sustainability_rating: Rating
     images: List[ReviewImageRead]
 
     class Config:

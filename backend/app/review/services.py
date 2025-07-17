@@ -119,6 +119,8 @@ async def get_comments_by_restaurant(
             avatar_url=review.user.avatar_url,
             created_at=review.created_at.date().isoformat(),
             comment=review.comment,
+            normal_rating=review.normal_rating,
+            sustainability_rating=review.sustainability_rating,
             images=[ReviewImageRead(**build_image_response(img)) for img in review.images],
         )
         comments.append(comment)

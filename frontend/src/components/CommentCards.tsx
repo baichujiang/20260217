@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/dialog';
 import { useState } from 'react';
 import { DialogDescription } from '@radix-ui/react-dialog';
+import { Badge } from './ui/badge';
+import { Star } from 'lucide-react';
 
 interface CommentCardsProps {
   tags: TopTag[];
@@ -51,18 +53,37 @@ export default function CommentCards({ comments, tags }: CommentCardsProps) {
             key={comment.review_id}
             className="w-screen flex flex-col justify-between border-none shadow-none"
           >
-            <CardHeader className="flex flex-row gap-4 items-center">
-              <Avatar>
-                <AvatarImage src={comment.avatar_url} alt="default-avatar" />
-                <AvatarFallback>
-                  {comment.user_name.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle>{comment.user_name}</CardTitle>
-                <CardDescription>{comment.created_at}</CardDescription>
+            <CardHeader className="flex flex-row justify-between items-start">
+              {/* Left: Avatar + User Info */}
+              <div className="flex flex-row gap-4 items-center">
+                <Avatar>
+                  <AvatarImage src={comment.avatar_url} alt="default-avatar" />
+                  <AvatarFallback>
+                    {comment.user_name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <CardTitle>{comment.user_name}</CardTitle>
+                  <CardDescription>{comment.created_at}</CardDescription>
+                </div>
+              </div>
+
+              {/* Right: Rating Badges */}
+              <div className="flex flex-row gap-2 pr-2 pt-2">
+                <Badge variant="outline" className="text-sm flex items-center gap-1">
+                  <Star fill="currentColor" className="w-4 h-4" />
+                    {comment.normal_rating}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="text-[#57cc99] text-sm flex items-center gap-1"
+                >
+                  <Star fill="currentColor" className="w-4 h-4" />
+                    {comment.sustainability_rating}
+                </Badge>
               </div>
             </CardHeader>
+
 
             <CardContent className="space-y-4">
               <p>{comment.comment}</p>
