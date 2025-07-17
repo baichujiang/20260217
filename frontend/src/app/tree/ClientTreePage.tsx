@@ -41,6 +41,12 @@ interface TreeData {
   created_at: string;
 }
 
+interface User {
+    avatar_url?: string;
+  }
+
+  
+
 export default function ClientTreePage() {
   const [trees, setTrees] = useState<TreeData[]>([]);
   const [greenPoints, setGreenPoints] = useState<number>(0);
@@ -50,23 +56,30 @@ export default function ClientTreePage() {
   const [selectedTreeId, setSelectedTreeId] = useState<number | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router = useRouter();
-  const [badges, setBadges] = useState<number>(0);
+  const [badges, setBadges] = useState<any[]>([]);
   const kettleRef = useRef<HTMLImageElement | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   function triggerKettleAnimation() {
     if (!kettleRef.current) return;
     const el = kettleRef.current;
     el.classList.remove("animate-pour");
-    void el.offsetWidth; // 触发重新渲染
+    void el.offsetWidth; 
     el.classList.add("animate-pour");
   }
+
+  useEffect(() => {
+    fetchWithAuth("http://localhost:8000/users/me")
+      .then((res) => res.json())
+      .then((data: User) => setUser(data))
+      .catch((err) => console.error("Failed to fetch user", err));
+  }, []);
   
   useEffect(() => {
     fetchWithAuth("http://localhost:8000/badges/my")
       .then((res) => res.json())
       .then((data) => {
-        const unlocked = data.filter((b: any) => b.unlocked).length;
-        setBadges(unlocked);
+        setBadges(data); 
       })
       .catch((err) => {
         console.error("Failed to fetch badges", err);
@@ -106,7 +119,6 @@ export default function ClientTreePage() {
     greenPoints >= 10;
 
   async function handleWater(treeId: number, idx: number) {
-
     try {
       const res = await fetchWithAuth(
         `http://localhost:8000/trees/${treeId}/water`,
@@ -187,7 +199,7 @@ export default function ClientTreePage() {
         aria-label="My Rewards"
         >
         <Image
-            src="/rewards.png"  // 确保文件在 public/rewards.png
+            src="/rewards.png" 
             alt="My Rewards"
             width={80}
             height={80}
@@ -201,11 +213,11 @@ export default function ClientTreePage() {
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
         <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
         <div className="p-4 pb-0">
-          <HeaderStats badges={badges} greenPoints={greenPoints} avatarUrl="/avatar-default.svg" />
+          <HeaderStats badges={badges.filter(b => b.unlocked && b.currentProgress >= b.requiredProgress).length} greenPoints={greenPoints} avatarUrl={user?.avatar_url || "/avatar-default.svg"} />
         </div>
         {trees.length === 0 ? (
                 <div className="flex flex-col items-center justify-center text-center mt-24 px-4 relative">
-                {/* 灰色树苗图 */}
+                {/* Gray sapling illustration */}
                 <Image
                     src="/empty-tree.png"
                     alt="No trees"
@@ -214,13 +226,13 @@ export default function ClientTreePage() {
                     className="mb-4 opacity-70 grayscale"
                 />
 
-                {/* 简洁提示文字 */}
+                {/* Simple reminder text */}
                 <p className="text-base text-gray-700 mb-10 font-medium leading-relaxed max-w-xs">
                 Tap the <span className="text-green-700 font-bold">Greenpoints</span> button at the top right to start your green journey!
                 </p>
 
 
-                {/* 引导箭头 + 说明 */}
+                {/* Guide Arrow + Description */}
                 <div className="absolute -top-20 right-2 flex flex-col items-center animate-bounce">
                     <Image src="/arrow-up.png" alt="Arrow" width={36} height={36} />
                     <p className="mt-1 px-2 py-1 text-xs font-semibold text-green-700 bg-yellow-100 rounded-md shadow">
@@ -228,7 +240,6 @@ export default function ClientTreePage() {
                     </p>
                 </div>
                 </div>
-
 
         ) : (
             <div className="relative w-full mt-4">
@@ -257,7 +268,7 @@ export default function ClientTreePage() {
                     alt="Watering Kettle"
                     width={96}
                     height={96}
-                    className="transition" // 添加过渡效果，初始不加 animate-pour，由 trigger 函数动态添加
+                    className="transition" 
                     />
 
                   </button>

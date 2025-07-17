@@ -70,9 +70,8 @@ async def get_me(
         id=user.id,
         username=user.username,
         total_points=total,
-        avatar_url=user.avatar_url
+        avatar_url = user.avatar_url
     )
-
 
 @router.get("/{user_id}", summary="Get A Single User", response_model=UserInfoRead)
 async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):

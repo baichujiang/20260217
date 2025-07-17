@@ -1,11 +1,12 @@
 # app/users/schemas.py
 from pydantic import BaseModel
+from typing import Optional
 
 class UserInfoRead(BaseModel):
     id: int
     username: str
     total_points: int
-    avatar_url: str
+    avatar_url: Optional[str] = None
 
     class Config:
         orm_mode = True
