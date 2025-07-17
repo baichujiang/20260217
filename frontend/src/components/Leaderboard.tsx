@@ -1,12 +1,11 @@
-// components/Leaderboard.tsx
 import React, { useState, useEffect } from 'react';
 import Image from "next/image";
-
 
 interface LeaderboardEntry {
   id: number;
   username: string;
   watering_amount: number;
+  avatar_url: string | null;
 }
 
 type Period = 'daily' | 'week' | 'total';
@@ -34,7 +33,7 @@ export const Leaderboard: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData(); // 初次加载
+    fetchData(); // Trigger on initial load and when period changes
   }, [period]);
 
   const renderTabs = () => (
@@ -54,13 +53,22 @@ export const Leaderboard: React.FC = () => {
   const renderList = () => {
     if (loading) return <p>Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
-    if (entries.length === 0) return <p>暂无数据</p>;
+    if (entries.length === 0) return <p>No data available</p>;
 
     return (
       <ol className="divide-y divide-gray-200">
         {entries.map((e, idx) => (
-          <li key={e.id} className="flex justify-between py-2">
-            <span>#{idx + 1} {e.username}</span>
+          <li key={e.id} className="flex items-center justify-between py-2">
+            <div className="flex items-center space-x-3">
+              <Image
+                src={e.avatar_url || "/avatar-default.svg"}
+                alt="Avatar"
+                width={32}
+                height={32}
+                className="rounded-full border"
+              />
+              <span>#{idx + 1} {e.username}</span>
+            </div>
             <span className="font-semibold">{e.watering_amount} pts</span>
           </li>
         ))}

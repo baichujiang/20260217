@@ -195,7 +195,7 @@ export default function ClientTreePage() {
       <Header />
       <button
         onClick={() => router.push("/myrewards")}
-        className="fixed top-36 left-4 z-50 p-0 bg-transparent rounded-full animate-float transition active:scale-95 hover:scale-105"
+        className="absolute top-36 left-4 z-50 p-0 bg-transparent rounded-full animate-float transition active:scale-95 hover:scale-105"
         aria-label="My Rewards"
         >
         <Image

@@ -18,10 +18,6 @@ router = APIRouter(
 
 @router.get("/", summary="Get All Users", response_model=List[UserInfoRead])
 async def get_users(db: AsyncSession = Depends(get_db)):
-    """
-    获取所有用户及其当前积分（排行榜）。
-    """
-    # 预加载 points 关系，避免懒加载触发异步 IO 错误
     result = await db.execute(
         select(User).options(selectinload(User.points))
     )
@@ -75,9 +71,6 @@ async def get_me(
 
 @router.get("/{user_id}", summary="Get A Single User", response_model=UserInfoRead)
 async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
-    """
-    获取单个用户及其当前积分余额。
-    """
     result = await db.execute(
         select(User)
         .where(User.id == user_id)
