@@ -111,17 +111,6 @@ async def update_score(db: AsyncSession, restaurant_id: int):
     result = await db.execute(stmt)
     scores = result.mappings().one_or_none()
 
-    sourcing = scores["sourcing_score"]
-    waste = scores["waste_score"]
-    menu = scores["menu_score"]
-    energy = scores["energy_score"]
-
-    # Calculate sustainability as avg of the 4 sustainability-related scores
-    if all(score is not None for score in [sourcing, waste, menu, energy]):
-        sustainability = (sourcing + waste + menu + energy) / 4
-    else:
-        sustainability = None
-
     if scores:
         restaurant_stmt = select(Restaurant).where(Restaurant.id == restaurant_id)
         restaurant_result = await db.execute(restaurant_stmt)
@@ -132,7 +121,7 @@ async def update_score(db: AsyncSession, restaurant_id: int):
             restaurant.food_score = scores["food_score"]
             restaurant.service_score = scores["service_score"]
             restaurant.environment_score = scores["environment_score"]
-            restaurant.sustainability_score = sustainability
+            restaurant.sustainability_score = scores["sustainability_score"]
             restaurant.sourcing_score = scores["sourcing_score"]
             restaurant.waste_score = scores["waste_score"]
             restaurant.menu_score = scores["menu_score"]

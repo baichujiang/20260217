@@ -16,6 +16,7 @@ import {
   Bed,
   Utensils,
   UserCircle,
+  Trees,
 } from "lucide-react"
 
 export function Header() {
@@ -48,8 +49,14 @@ export function Header() {
                 <Link href="/account" className="w-full">
                   <Button variant="ghost" className="w-full justify-start gap-2">
                       <UserCircle className="w-5 h-5" />
-                      Account
+                      My Account
                   </Button>
+                </Link>
+                <Link href="/tree" className="w-full">
+                    <Button variant="ghost" className="w-full justify-start gap-2">
+                        <Trees className="w-5 h-5" />
+                            My Tree
+                    </Button>
                 </Link>
                 <Link href="/hotel" className="w-full">
                   <Button variant="ghost" className="w-full justify-start gap-2">

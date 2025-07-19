@@ -36,6 +36,8 @@ export interface Comment {
   user_name: string;
   comment: string;
   created_at: string;
+  normal_rating: number;
+  sustainability_rating: number;
   images: ReviewImage[];
   avatar_url: string;
 }

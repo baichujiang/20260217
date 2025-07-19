@@ -1,5 +1,4 @@
-import os
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, conint, field_serializer
+from pydantic import BaseModel, ConfigDict, HttpUrl, conint
 from typing import Annotated, List, Optional
 from uuid import UUID
 from datetime import datetime
@@ -73,6 +72,8 @@ class ReviewCommentRead(BaseModel):
     avatar_url: str
     created_at: str
     comment: str
+    normal_rating: Rating
+    sustainability_rating: Rating
     images: List[ReviewImageRead]
 
     class Config:

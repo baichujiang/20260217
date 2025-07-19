@@ -45,9 +45,9 @@ async def perform_checkin(user_id: int, db: AsyncSession):
         checkin = DailyCheckin(user_id=user_id, date=date.today())
         db.add(checkin)
 
-        await add_points(user_id=user_id, amount=5, db=db, reason="daily_checkin")
+        await add_points(user_id=user_id, amount=3, db=db, reason="daily_checkin")
 
-        action_message = "Check-in successful! +5 points awarded."
+        action_message = "Check-in successful! +3 points awarded."
     else:
         action_message = "Already checked in today."
 

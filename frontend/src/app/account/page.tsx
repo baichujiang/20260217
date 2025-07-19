@@ -28,7 +28,7 @@ export default function AccountPage() {
             try {
                 const decoded = jwtDecode<{ exp: number }>(token);
                 if (decoded.exp * 1000 > Date.now()) {
-                    router.push("/account/profile");
+                    router.replace("/account/profile");
                     return;
                 } else {
                     localStorage.removeItem("token");
@@ -70,7 +70,7 @@ export default function AccountPage() {
             localStorage.setItem("token", access_token);
 
             toast.success("Logged in successfully!");
-            router.push("/account/profile");
+            router.replace("/account/profile");
         } catch (err: any) {
             setMessage("Login failed. Incorrect username or password.");
         } finally {
@@ -116,7 +116,7 @@ export default function AccountPage() {
                         Don't have an account?{" "}
                         <button
                             type="button"
-                            onClick={() => router.push("/account/register")}
+                            onClick={() => router.replace("/account/register")}
                             className="text-blue-600 hover:underline"
                         >
                             Register

@@ -151,6 +151,9 @@ export default function ProfilePage() {
       const updated = await checkinRes.json();
       setHasCheckedInToday(true);
       setCurrentStreak(updated.current_streak);
+      setProfile((prev) =>
+        prev ? { ...prev, total_points: prev.total_points + 3 } : prev
+      );
 
       toast.success("Checked in successfully!");
     } catch (err) {
@@ -251,7 +254,6 @@ export default function ProfilePage() {
 
               {/* Points */}
               <Card className="shadow text-white bg-[linear-gradient(to_right,#80ed99,#38A3A5)]">
-
                 <CardContent className="pt-6 text-center space-y-2">
                   <div className="flex items-center justify-center space-x-2 mb-3">
                     <Trophy className="w-6 h-6 text-yellow-300" />

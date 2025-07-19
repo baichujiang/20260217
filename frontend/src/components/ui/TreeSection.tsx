@@ -2,39 +2,28 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { Button } from "./button"
 
 export default function TreeSection() {
     return (
         <div className="mt-10 px-4 z-10">
-            <div className="flex flex-col md:flex-row items-center justify-center gap-6 bg-green-50 p-4 rounded-xl shadow-md max-w-4xl mx-auto">
-                {/* Left: Introduction */}
-                <div className="text-left max-w-sm">
-                    <h2 className="text-xl font-bold text-green-800 mb-1">Collect your bonus</h2>
-                    <p className="text-gray-700 text-base leading-relaxed">
-                        Water your tree daily and watch it grow. Your eco-activities contribute to a greener world. 🌱
+            <div
+                className="relative flex flex-col md:flex-row items-start justify-between gap-6 p-6 rounded-xl shadow-md max-w-4xl mx-auto bg-[url('/tree-bg.png')] bg-cover bg-center text-white"
+            >
+                <div className="absolute inset-0 bg-black/30 rounded-xl z-0" />
+                    {/* Content (text + button) */}
+                    <div className="relative z-10 flex flex-col gap-4 max-w-sm">
+                    <h2 className="text-xl font-bold text-white">From Action to Leaf</h2>
+                    <p className="text-white text-base leading-relaxed">
+                        Water your tree daily and watch it grow. Your eco-activities contribute to a greener world.
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">Every drop counts!</p>
+                        <Button asChild className="bg-white text-[#1a543cff] hover:bg-gray-100 shadow px-6 py-2 w-30">
+                            <Link href="/tree">Start Growing</Link>
+                        </Button>
                 </div>
-
-                {/* Right: Tree Image with animation */}
-                <Link href="/tree" passHref>
-                    <motion.div
-                        animate={{ y: [0, -5, 0] }}
-                        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                        whileHover={{ scale: 1.05 }}
-                        className="w-[200px] h-[200px] md:w-[240px] md:h-[240px]"
-                    >
-                        <Image
-                            src="/tree.svg"
-                            alt="Tree"
-                            width={240}
-                            height={240}
-                            className="rounded-md w-full h-full object-contain"
-                        />
-                    </motion.div>
-                </Link>
             </div>
+
         </div>
+
     )
 }

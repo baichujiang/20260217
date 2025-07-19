@@ -30,6 +30,7 @@ export default function RestaurantCard({
           width={variant === "middle" ? 120 : 400}
           height={variant === "middle" ? 120 : 200}
           className={`object-cover ${variant === "middle" ? "w-32 h-32" : "w-full h-32"}`}
+          unoptimized
         />
 
         <div className={`p-4 ${variant === "middle" ? "flex flex-col justify-center" : "space-y-1"}`}>
