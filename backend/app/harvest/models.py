@@ -25,7 +25,6 @@ class RewardDelivery(Base):
 
     submitted_at = Column(DateTime, default=datetime.utcnow)
 
-    # 可选的关系字段（如果你后面需要联表查询）
     user = relationship("User", back_populates="rewards", lazy="joined")
     tree = relationship("Tree", lazy="joined")
 
@@ -38,4 +37,4 @@ class HarvestLog(Base):
     timestamp = Column(DateTime, default=func.now())
 
 
-from app.users.models import User  # ⬅ 放在文件结尾，避免循环引用
+from app.users.models import User  

@@ -27,8 +27,6 @@ from .points.routes import router as points_router
 from .users.routes import router as users_router
 from .harvest.routes import router as harvest_router
 from .review.routes import router as review_router
-from .share.routes import router as share_router
-from .core.config import settings
 
 
 @asynccontextmanager
@@ -66,7 +64,6 @@ app.include_router(harvest_router)
 app.include_router(restaurant_router)
 app.include_router(badges_router)
 app.include_router(review_router)
-app.include_router(share_router)
 app.include_router(checkin_router)
 
 @app.get("/")

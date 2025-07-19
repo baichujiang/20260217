@@ -14,16 +14,16 @@ async def list_tree_types():
         result = await session.execute(select(TreeType))
         tree_types = result.scalars().all()
         if not tree_types:
-            print("无任何树种数据。")
+            print("No tree types found.")
             return
         for t in tree_types:
-            print(f"[{t.id}] {t.species} | 成长目标: {t.goal_growth_value} | 图片: {t.image_src}")
+            print(f"[{t.id}] {t.species} | Growth Target: {t.goal_growth_value} | Image: {t.image_src}")
 
 async def add_tree_type(species: str, goal_growth_value: int, image_src: str):
     async with async_session_maker() as session:
         result = await session.execute(select(TreeType).where(TreeType.species == species))
         if result.scalar_one_or_none():
-            print(f"⚠️ 树种 '{species}' 已存在，跳过。")
+            print(f"⚠️ Tree type '{species}' already exists. Skipping.")
             return
         new_type = TreeType(
             species=species,
@@ -32,31 +32,28 @@ async def add_tree_type(species: str, goal_growth_value: int, image_src: str):
         )
         session.add(new_type)
         await session.commit()
-        print(f"✅ 添加成功：{species}")
+        print(f"Successfully added: {species}")
 
 async def delete_tree_type(species: str):
-    fallback_species = "默认树种"  # ⚠️ 你可以自定义这个备用树种名称
+    fallback_species = "Default Tree Type"
     async with async_session_maker() as session:
-        # 查找将要删除的树种
         result = await session.execute(select(TreeType).where(TreeType.species == species))
         tree_type_to_delete = result.scalar_one_or_none()
         if not tree_type_to_delete:
-            print(f"❌ 未找到名为 '{species}' 的树种。")
+            print(f"Tree type '{species}' not found.")
             return
 
-        # 查找备用树种（不能是同一个）
         result_fallback = await session.execute(
             select(TreeType).where(TreeType.species == fallback_species)
         )
         fallback = result_fallback.scalar_one_or_none()
         if not fallback:
-            print(f"⚠️ 请先添加一个名为 '{fallback_species}' 的备用树种。")
+            print(f"⚠️ Please add a fallback tree type named '{fallback_species}' first.")
             return
         if fallback.id == tree_type_to_delete.id:
-            print(f"⚠️ 要删除的树种和备用树种是同一个，操作中止。")
+            print(f"⚠️ The tree type to be deleted is the same as the fallback type. Operation aborted.")
             return
 
-        # 更新所有引用该类型的树
         from app.tree.models import Tree
         await session.execute(
             Tree.__table__.update()
@@ -64,10 +61,9 @@ async def delete_tree_type(species: str):
             .values(type_id=fallback.id)
         )
 
-        # 删除该树种
         await session.delete(tree_type_to_delete)
         await session.commit()
-        print(f"✅ 树种 '{species}' 已删除，关联树已迁移到 '{fallback_species}'。")
+        print(f"Tree type '{species}' deleted. Associated trees moved to '{fallback_species}'.")
 
 
 async def update_tree_type(species: str, goal_growth_value: int = None, image_src: str = None):
@@ -75,38 +71,38 @@ async def update_tree_type(species: str, goal_growth_value: int = None, image_sr
         result = await session.execute(select(TreeType).where(TreeType.species == species))
         tree_type = result.scalar_one_or_none()
         if not tree_type:
-            print(f"❌ 未找到名为 '{species}' 的树种。")
+            print(f"Tree type '{species}' not found.")
             return
         if goal_growth_value:
             tree_type.goal_growth_value = goal_growth_value
         if image_src:
             tree_type.image_src = image_src
         await session.commit()
-        print(f"🔄 树种 '{species}' 已更新。")
+        print(f"🔄 Tree type '{species}' updated.")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="🌳 树种管理工具")
+    parser = argparse.ArgumentParser(description="🌳 Tree Type Management Tool")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    # 列出树种
-    subparsers.add_parser("list", help="列出所有树种")
+    # List tree types
+    subparsers.add_parser("list", help="List all tree types")
 
-    # 添加
-    add_parser = subparsers.add_parser("add", help="添加新的树种")
-    add_parser.add_argument("--species", required=True, help="树种名")
-    add_parser.add_argument("--goal", required=True, type=int, help="成长目标值")
-    add_parser.add_argument("--image", required=True, help="图片路径")
+    # Add new tree type
+    add_parser = subparsers.add_parser("add", help="Add a new tree type")
+    add_parser.add_argument("--species", required=True, help="Tree type name")
+    add_parser.add_argument("--goal", required=True, type=int, help="Growth goal value")
+    add_parser.add_argument("--image", required=True, help="Image path")
 
-    # 删除
-    del_parser = subparsers.add_parser("delete", help="删除树种")
-    del_parser.add_argument("--species", required=True, help="要删除的树种名")
+    # Delete tree type
+    del_parser = subparsers.add_parser("delete", help="Delete a tree type")
+    del_parser.add_argument("--species", required=True, help="Tree type name to delete")
 
-    # 修改
-    upd_parser = subparsers.add_parser("update", help="修改已有树种")
-    upd_parser.add_argument("--species", required=True, help="要修改的树种名")
-    upd_parser.add_argument("--goal", type=int, help="新的成长目标值")
-    upd_parser.add_argument("--image", help="新的图片路径")
+    # Update tree type
+    upd_parser = subparsers.add_parser("update", help="Update an existing tree type")
+    upd_parser.add_argument("--species", required=True, help="Tree type name to update")
+    upd_parser.add_argument("--goal", type=int, help="New growth goal value")
+    upd_parser.add_argument("--image", help="New image path")
 
     args = parser.parse_args()
 

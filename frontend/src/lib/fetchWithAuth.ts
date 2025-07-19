@@ -17,7 +17,6 @@ export async function fetchWithAuth(
     headers,
   });
 
-  // 若未授权，则跳转登录页面，并带上当前页面作为跳转参数
   if (res.status === 401) {
     const currentPath = window.location.pathname + window.location.search;
     window.location.href = `/account?redirect=${encodeURIComponent(currentPath)}`;
