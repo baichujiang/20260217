@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function AccountPage() {
     const router = useRouter();
@@ -17,17 +19,27 @@ export default function AccountPage() {
     });
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const [authChecked, setAuthChecked] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
+
         if (token) {
-            const decoded = jwtDecode<{ exp: number }>(token);
-            if (decoded.exp * 1000 > Date.now()) {
-                router.push("/account/profile");
-            } else {
+            try {
+                const decoded = jwtDecode<{ exp: number }>(token);
+                if (decoded.exp * 1000 > Date.now()) {
+                    router.push("/account/profile");
+                    return;
+                } else {
+                    localStorage.removeItem("token");
+                }
+            } catch (error) {
+                console.error("Invalid token", error);
                 localStorage.removeItem("token");
             }
         }
+
+        setAuthChecked(true);
     }, [router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +57,7 @@ export default function AccountPage() {
             params.append("password", formData.password);
 
             const response = await axios.post(
-                "http://127.0.0.1:8000/auth/token",
+                `${API_BASE_URL}/auth/token`,
                 params,
                 {
                     headers: {
@@ -65,6 +77,8 @@ export default function AccountPage() {
             setLoading(false);
         }
     };
+
+    if (!authChecked) return null; // prevent UI flash before auth check
 
     return (
         <main className="min-h-screen bg-white">
@@ -99,7 +113,7 @@ export default function AccountPage() {
                         <p className="text-center text-sm mt-4 text-red-600">{message}</p>
                     )}
                     <div className="text-center mt-4 text-sm">
-                        Don’t have an account?{" "}
+                        Don't have an account?{" "}
                         <button
                             type="button"
                             onClick={() => router.push("/account/register")}

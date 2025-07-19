@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
@@ -13,6 +13,8 @@ interface TreeOption {
   goal_growth_value: number;
   image_src: string;
 }
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function MoreTreesPage() {
   const router = useRouter();
@@ -25,7 +27,7 @@ export default function MoreTreesPage() {
   useEffect(() => {
     const fetchTreeTypes = async () => {
       try {
-        const res = await fetchWithAuth("http://localhost:8000/trees/types");
+        const res = await fetchWithAuth(`${API_BASE_URL}/trees/types`);
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         setOptions(
@@ -47,7 +49,7 @@ export default function MoreTreesPage() {
   const handleCreateTree = async (type_id: number) => {
     setCreating(true);
     try {
-      const res = await fetchWithAuth("http://localhost:8000/trees/", {
+      const res = await fetchWithAuth(`${API_BASE_URL}/trees/`, {
         method: "POST",
         body: JSON.stringify({ type_id }),
       });

@@ -4,7 +4,7 @@ export interface Review {
     food_rating: number;
     service_rating: number;
     environment_rating: number;
-    sustainablility_rating: number;
+    sustainability_rating: number;
     sourcing_rating: number;
     waste_rating: number;
     menu_rating: number;
@@ -37,4 +37,5 @@ export interface Comment {
   comment: string;
   created_at: string;
   images: ReviewImage[];
+  avatar_url: string;
 }

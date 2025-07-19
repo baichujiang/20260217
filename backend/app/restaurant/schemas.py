@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, Field
+from pydantic import BaseModel, HttpUrl, Field, field_validator
 from typing import Optional
 
 
@@ -27,6 +27,16 @@ class RestaurantOut(RestaurantBase):
 
     class Config:
         orm_mode = True
+
+    @field_validator(
+        "normal_score",
+        "sustainability_score", "sourcing_score", "waste_score",
+        "menu_score", "energy_score", mode="before"
+    )
+    def round_scores(cls, value):
+        if value is not None:
+            return round(value, 1)
+        return value
 
 class TopTagOut(BaseModel):
     name: str

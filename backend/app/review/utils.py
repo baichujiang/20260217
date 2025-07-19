@@ -25,7 +25,7 @@ def map_review_to_reviewread_schema(review: Review, request: Request) -> ReviewR
         food_rating=review.food_rating,
         service_rating=review.service_rating,
         environment_rating=review.environment_rating,
-        sustainablility_rating=review.sustainablility_rating,
+        sustainability_rating=review.sustainability_rating,
         sourcing_rating=review.sourcing_rating,
         waste_rating=review.waste_rating,
         menu_rating=review.menu_rating,
