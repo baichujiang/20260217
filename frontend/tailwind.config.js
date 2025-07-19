@@ -12,8 +12,9 @@ export const theme = {
       mintGreen: "#b7e4c7",
       brightGreen: "#80ed99",
       midGreen: "#57cc99",
+      midGreenDark: "#49ac81ff",
       tealGreen: "#38a3a5",
-      darkGreen: "#1b4332",
+      darkGreen: "#1a543cff",
       naviBlue: "#22577a"
     },
     keyframes: {

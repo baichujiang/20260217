@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Image from "next/image";
+import {RefreshCw} from "lucide-react"
 
 interface LeaderboardEntry {
   id: number;
@@ -85,12 +86,7 @@ export const Leaderboard: React.FC = () => {
           onClick={fetchData}
           className="p-2 hover:opacity-80"
         >
-          <Image
-            src="/refresh.png"
-            alt="Refresh"
-            width={40}
-            height={40}
-          />
+          <RefreshCw />
         </button>
       </div>
       {renderTabs()}

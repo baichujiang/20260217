@@ -198,7 +198,7 @@ export default function ClientTreePage() {
 
       <Header />
       <button
-        onClick={() => router.push("/myrewards")}
+        onClick={() => router.replace("/myrewards")}
         className="absolute top-36 left-4 z-50 p-0 bg-transparent rounded-full animate-float transition active:scale-95 hover:scale-105"
         aria-label="My Rewards"
         >
@@ -273,7 +273,7 @@ export default function ClientTreePage() {
                       alt="Watering Kettle"
                       width={96}
                       height={96}
-                      className="relative z-10 transition" 
+                      className="relative z-10 transition shadow" 
                     />
 
                   <img
@@ -407,7 +407,7 @@ export default function ClientTreePage() {
             <button
                 onClick={() => {
                 setSuccessMessage(null);
-                router.push("/myrewards");
+                router.replace("/myrewards");
                 }}
                 className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
             >

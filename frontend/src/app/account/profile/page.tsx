@@ -39,7 +39,7 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
       const storedToken = localStorage.getItem("token");
       if (!storedToken) {
-        router.push("/account");
+        router.replace("/account");
         return;
       }
 
@@ -67,7 +67,7 @@ export default function ProfilePage() {
       } catch (err) {
         console.error("Error loading profile:", err);
         localStorage.removeItem("token");
-        router.push("/account");
+        router.replace("/account");
       } finally {
         setLoading(false);
       }
@@ -97,7 +97,7 @@ export default function ProfilePage() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("selectedAvatar");
-    router.push("/account");
+    router.replace("/account");
   };
 
   const handleSaveAvatar = async () => {
@@ -251,7 +251,6 @@ export default function ProfilePage() {
 
               {/* Points */}
               <Card className="shadow text-white bg-[linear-gradient(to_right,#80ed99,#38A3A5)]">
-
                 <CardContent className="pt-6 text-center space-y-2">
                   <div className="flex items-center justify-center space-x-2 mb-3">
                     <Trophy className="w-6 h-6 text-yellow-300" />

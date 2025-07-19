@@ -245,7 +245,7 @@ const tagGroups = tags.reduce<Record<string, Tag[]>>((acc, tag) => {
       <div className="fixed bottom-0 left-0 w-full p-4 sm:static sm:border-none sm:p-0">
         <div className="max-w-md mx-auto">
           <Button
-            className="w-full bg-[#57cc99] text-white hover:bg-green-700"
+            className="w-full bg-[#57cc99] text-white hover:bg-[#49ac81ff]"
             onClick={handleSubmit}
             disabled={isSubmitting}
           >
