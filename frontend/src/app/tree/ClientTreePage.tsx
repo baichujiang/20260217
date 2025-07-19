@@ -105,6 +105,13 @@ export default function ClientTreePage() {
   }, []);
 
   useEffect(() => {
+    fetchWithAuth(`${API_BASE_URL}/users/me`)
+      .then(res => res.json())
+      .then(data => setUser(data))
+      .catch(console.error);
+  }, [])
+
+  useEffect(() => {
     if (!emblaApi) return;
     const onSelect = () => setActiveIndex(emblaApi.selectedScrollSnap());
     onSelect();
