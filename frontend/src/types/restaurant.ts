@@ -16,3 +16,12 @@ export interface TopTag {
     category: string;
     count: number;
 }
+
+export type RestaurantCardProps = {
+  id: number;
+  name: string;
+  address: string;
+  normal_score: number | null | undefined
+  sustainability_score: number | null | undefined
+  image: string;
+};

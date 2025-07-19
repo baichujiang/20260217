@@ -53,7 +53,7 @@ export default function CommentCards({ comments, tags }: CommentCardsProps) {
           >
             <CardHeader className="flex flex-row gap-4 items-center">
               <Avatar>
-                <AvatarImage src="/avatar-default.svg" alt="default-avatar" />
+                <AvatarImage src={comment.avatar_url} alt="default-avatar" />
                 <AvatarFallback>
                   {comment.user_name.slice(0, 2).toUpperCase()}
                 </AvatarFallback>

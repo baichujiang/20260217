@@ -7,19 +7,14 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 export function HeaderStats({
   badges,
   greenPoints,
+  avatarUrl = "/avatar-default.svg",
 }: {
   badges: number
   greenPoints: number
+  avatarUrl: string
 }) {
-  const router = useRouter();
-  const [avatarUrl, setAvatarUrl] = useState("/avatar-default.svg");
-
-  useEffect(() => {
-    const storedAvatar = localStorage.getItem("selectedAvatar");
-    if (storedAvatar) {
-      setAvatarUrl(storedAvatar);
-    }
-  }, []);
+  const router = useRouter()
+  
 
   return (
     <div className="flex justify-between items-center mb-6 px-4">

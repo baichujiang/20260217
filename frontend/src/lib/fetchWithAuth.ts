@@ -5,7 +5,6 @@ export async function fetchWithAuth(
   options: RequestInit = {}
 ): Promise<Response> {
   const token = localStorage.getItem("token");
-  console.log("🚀 Token used in fetch:", token);
 
   const headers = {
     ...(options.headers || {}),

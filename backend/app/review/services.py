@@ -11,6 +11,8 @@ from typing import List, Optional
 from .models import Review, ReviewImage, ReviewTag
 from .schemas import ReviewCreate, ReviewImageRead, ReviewTagCreate, ReviewCommentRead
 from .utils import build_image_response
+from ..restaurant.services import update_score
+from ..points.service import add_points
 
 
 # --- REVIEW CRUD ---
@@ -22,7 +24,7 @@ async def create_review(db: AsyncSession, data: ReviewCreate, user_id: int) -> R
         food_rating=data.food_rating,
         service_rating=data.service_rating,
         environment_rating=data.environment_rating,
-        sustainablility_rating=data.sustainablility_rating,
+        sustainability_rating=data.sustainability_rating,
         sourcing_rating=data.sourcing_rating,
         waste_rating=data.waste_rating,
         menu_rating=data.menu_rating,
@@ -49,6 +51,11 @@ async def create_review(db: AsyncSession, data: ReviewCreate, user_id: int) -> R
     )
     result = await db.execute(stmt)
     review_with_relations = result.scalar_one()
+
+    await update_score(db, data.restaurant_id)
+
+    await add_points(db, user_id, 3, "review")
+
     return review_with_relations
 
 
@@ -106,6 +113,7 @@ async def get_comments_by_restaurant(
         comment = ReviewCommentRead(
             review_id=review.id,
             user_name=review.user.username,
+            avatar_url=review.user.avatar_url,
             created_at=review.created_at.date().isoformat(),
             comment=review.comment,
             images=[ReviewImageRead(**build_image_response(img, request)) for img in review.images],
@@ -174,7 +182,7 @@ async def save_and_create_review_image(session: AsyncSession, review_id: UUID, f
         raise HTTPException(status_code=500, detail="Failed to store image. " + str(e))
 
 
-async def get_review_images_by_restaurant(db: AsyncSession, restaurant_id: int) -> List[ReviewImage]:
+async def get_review_images_by_restaurant(db: AsyncSession, restaurant_id: int, limit: int) -> List[ReviewImage]:
     stmt = (
         select(Review)
         .where(Review.restaurant_id == restaurant_id)
@@ -185,7 +193,10 @@ async def get_review_images_by_restaurant(db: AsyncSession, restaurant_id: int) 
 
     all_images = []
     for review in reviews:
-        all_images.extend(review.images)
+        for image in review.images:
+            all_images.append(image)
+            if len(all_images) == limit:
+                return all_images
 
     return all_images
 

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Header } from "@/components/ui/Header";
+import { Header } from "@/components/Header";
 import RestaurantCarousel from "./RestaurantCarousel";
 import RestaurantDetailPageContent from "./RestaurantDetailPageContent";
 
