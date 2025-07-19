@@ -273,7 +273,7 @@ export default function ClientTreePage() {
                       alt="Watering Kettle"
                       width={96}
                       height={96}
-                      className="relative z-10 transition" 
+                      className="relative z-10 transition drop-shadow" 
                     />
 
                   <img

@@ -1,21 +1,19 @@
-import os
 from fastapi import Request
 
 from .schemas import ReviewRead, ReviewTagRead, ReviewImageRead
 from .models import Review, ReviewImage
+from .services import get_public_url
 
 
-def build_image_response(image: ReviewImage, request: Request):
-    filename = os.path.basename(image.file_path)
-    url = str(request.url_for("review-images", path=filename))
+def build_image_response(image: ReviewImage):
     return {
         "id": image.id,
-        "url": url,
+        "url": get_public_url(image.file_path),
         "uploaded_at": image.uploaded_at,
     }
 
 
-def map_review_to_reviewread_schema(review: Review, request: Request) -> ReviewRead:
+def map_review_to_reviewread_schema(review: Review) -> ReviewRead:
     return ReviewRead(
         id=review.id,
         user_id=review.user_id,
@@ -32,5 +30,5 @@ def map_review_to_reviewread_schema(review: Review, request: Request) -> ReviewR
         energy_rating=review.energy_rating,
         comment=review.comment,
         tags=[ReviewTagRead.model_validate(tag) for tag in review.tags],
-        images=[ReviewImageRead(**build_image_response(img, request)) for img in review.images],
+        images=[ReviewImageRead(**build_image_response(img)) for img in review.images],
     )

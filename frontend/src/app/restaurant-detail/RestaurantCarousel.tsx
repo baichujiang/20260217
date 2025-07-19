@@ -10,7 +10,12 @@ import {
   CarouselItem,
   CarouselDots,
 } from '@/components/ui/carousel';
-import { Dialog, DialogContent, DialogDescription, DialogTitle} from '@/components/ui/dialog'; // Make sure you have this component
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface ReviewImage {
   id: string;
@@ -44,7 +49,8 @@ export default function RestaurantCarousel() {
             ? data
             : [{ id: "fallback", url: "/default-restaurant.png", uploaded_at: "" }]
         );
-      } catch {
+      } catch (err) {
+        console.error("Image fetch error:", err);
         setImages([{ id: "fallback", url: "/default-restaurant.png", uploaded_at: "" }]);
       } finally {
         setLoading(false);
@@ -66,11 +72,12 @@ export default function RestaurantCarousel() {
                 <AspectRatio ratio={16 / 9} className="bg-muted rounded-lg">
                   <Image
                     src={img.url}
-                    alt={`Uploaded image ${img.id}`}
+                    alt={`Review image ${img.id}`}
                     fill
                     priority={index === 0}
                     onClick={() => setFullscreenImage(img.url)}
                     className="h-full w-full rounded-lg object-cover cursor-pointer hover:opacity-80 transition"
+                    unoptimized
                   />
                 </AspectRatio>
               </div>
@@ -92,6 +99,7 @@ export default function RestaurantCarousel() {
                 alt="Full review image"
                 fill
                 className="object-contain"
+                unoptimized
               />
             </div>
           )}

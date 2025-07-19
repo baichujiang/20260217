@@ -1,7 +1,5 @@
-import os
-import shutil
 import uuid
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -10,9 +8,9 @@ from typing import List, Optional
 
 from .models import Review, ReviewImage, ReviewTag
 from .schemas import ReviewCreate, ReviewImageRead, ReviewTagCreate, ReviewCommentRead
-from .utils import build_image_response
 from ..restaurant.services import update_score
 from ..points.service import add_points
+from ..core.supabase_client import supabase
 
 
 # --- REVIEW CRUD ---
@@ -59,10 +57,14 @@ async def create_review(db: AsyncSession, data: ReviewCreate, user_id: int) -> R
     return review_with_relations
 
 
-async def get_review(db: AsyncSession, review_id: UUID) -> Optional[Review]:
-    stmt = select(Review).where(Review.id == review_id)
+async def get_review(db: AsyncSession, review_id: UUID) -> Review:
+    stmt = (
+        select(Review)
+        .where(Review.id == review_id)
+        .options(selectinload(Review.images), selectinload(Review.tags))
+    )
     result = await db.execute(stmt)
-    return result.scalar_one_or_none()
+    return result.scalar_one()
 
 
 async def get_reviews_by_user(db: AsyncSession, user_id: int) -> List[Review]:
@@ -92,8 +94,9 @@ async def get_reviews_by_restaurant(db: AsyncSession, restaurant_id: int) -> Lis
 
 
 async def get_comments_by_restaurant(
-    db: AsyncSession, restaurant_id: int, request: Request
+    db: AsyncSession, restaurant_id: int
 ) -> List[ReviewCommentRead]:
+    from .utils import build_image_response
     stmt = (
         select(Review)
         .where(Review.restaurant_id == restaurant_id)
@@ -116,7 +119,9 @@ async def get_comments_by_restaurant(
             avatar_url=review.user.avatar_url,
             created_at=review.created_at.date().isoformat(),
             comment=review.comment,
-            images=[ReviewImageRead(**build_image_response(img, request)) for img in review.images],
+            normal_rating=review.normal_rating,
+            sustainability_rating=review.sustainability_rating,
+            images=[ReviewImageRead(**build_image_response(img)) for img in review.images],
         )
         comments.append(comment)
 
@@ -153,33 +158,31 @@ async def get_all_review_tags(db: AsyncSession) -> List[ReviewTag]:
 
 
 # --- REVIEW IMAGE SERVICES ---
-UPLOAD_DIR = "uploads/review_images"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+SUPABASE_BUCKET = "leafmiles-review-images"
+SIGNED_URL_EXPIRY = 3600
 
-
-async def save_and_create_review_image(session: AsyncSession, review_id: UUID, file) -> ReviewImage:
-    # Generate safe unique filename
+async def save_and_create_review_image(session: AsyncSession, review_id: UUID, file: UploadFile) -> ReviewImage:
     ext = file.filename.split(".")[-1]
     image_id = uuid.uuid4()
-    filename = f"{review_id}_{image_id}.{ext}"
-    file_path = os.path.join(UPLOAD_DIR, filename)
-    try:
-        # Save the image to disk
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+    filename = f"{review_id}/{image_id}.{ext}"
 
-        # Create and commit DB record
-        new_image = ReviewImage(id=image_id, review_id=review_id, file_path=file_path)
+    try:
+        # Read file content
+        file_data = await file.read()
+
+        # Upload to Supabase Storage
+        response = supabase.storage.from_(SUPABASE_BUCKET).upload(filename, file_data)
+
+        # Create DB record
+        new_image = ReviewImage(id=image_id, review_id=review_id, file_path=filename)
         session.add(new_image)
         await session.flush()
         await session.refresh(new_image)
 
         return new_image
-    
+
     except Exception as e:
-        if os.path.exists(file_path):
-                os.remove(file_path)
-        raise HTTPException(status_code=500, detail="Failed to store image. " + str(e))
+        raise HTTPException(status_code=500, detail="Failed to upload image. " + str(e))
 
 
 async def get_review_images_by_restaurant(db: AsyncSession, restaurant_id: int, limit: int) -> List[ReviewImage]:
@@ -209,8 +212,15 @@ async def get_review_images_by_review(db: AsyncSession, review_id: UUID) -> List
     )
     result = await db.execute(stmt)
     review = result.scalar_one_or_none()
-    
+
     if review is None:
         return []
-    
-    return review.images
+
+    return await review.images
+
+
+def get_public_url(path: str) -> str:
+    result = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(path)
+    if "error" in result and result["error"]:
+        raise HTTPException(status_code=500, detail="Failed to generate signed URL: " + result["error"]["message"])
+    return result
