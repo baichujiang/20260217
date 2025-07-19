@@ -151,6 +151,9 @@ export default function ProfilePage() {
       const updated = await checkinRes.json();
       setHasCheckedInToday(true);
       setCurrentStreak(updated.current_streak);
+      setProfile((prev) =>
+        prev ? { ...prev, total_points: prev.total_points + 3 } : prev
+      );
 
       toast.success("Checked in successfully!");
     } catch (err) {
