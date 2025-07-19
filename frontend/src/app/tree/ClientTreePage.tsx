@@ -62,11 +62,24 @@ export default function ClientTreePage() {
 
   function triggerKettleAnimation() {
     if (!kettleRef.current) return;
-    const el = kettleRef.current;
-    el.classList.remove("animate-pour");
-    void el.offsetWidth; 
-    el.classList.add("animate-pour");
+  
+    const kettle = kettleRef.current;
+    kettle.classList.remove("animate-pour");
+    void kettle.offsetWidth; 
+    kettle.classList.add("animate-pour");
+  
+    setTimeout(() => {
+      const stream = document.getElementById("water-stream") as HTMLElement | null;
+      if (!stream) return;
+  
+      stream.classList.remove("hidden");  
+      setTimeout(() => {
+        stream.classList.add("hidden"); 
+      }, 700); 
+    }, 150); 
   }
+  
+  
 
   useEffect(() => {
     fetchWithAuth("http://localhost:8000/users/me")
@@ -262,14 +275,25 @@ export default function ClientTreePage() {
                         : `Water this tree`
                     }
                   >
+                  <div className="relative w-24 h-24">
                     <img
-                    ref={kettleRef}
-                    src="/kettle.png"
-                    alt="Watering Kettle"
-                    width={96}
-                    height={96}
-                    className="transition" 
+                      ref={kettleRef}
+                      src="/kettle.png"
+                      alt="Watering Kettle"
+                      width={96}
+                      height={96}
+                      className="relative z-10 transition" 
                     />
+
+                  <img
+                    id="water-stream"
+                    src="/water-stream.png"
+                    alt="Water Stream"
+                    className="absolute left-[-36%] top-[40%] w-40 h-16 hidden"
+                  />
+
+                  </div>
+
 
                   </button>
                 </div>
@@ -289,15 +313,42 @@ export default function ClientTreePage() {
                         key={id}
                         className="relative flex flex-col items-center justify-end space-y-4 min-h-[400px]"
                       >
-                        <div className="relative w-64 h-64">
-                          <Image
-                            src={src}
-                            alt={type.species}
-                            fill
-                            className="object-cover object-center rounded-lg"
-                            priority
-                          />
-                        </div>
+                      <div
+                        className="relative w-64 h-64 cursor-pointer"
+                        onClick={(e) => {
+                          const img = e.currentTarget.querySelector("img");
+                          if (img) {
+                            img.classList.remove("animate-shake");
+                            void img.offsetWidth;
+                            img.classList.add("animate-shake");
+                          }
+                        const container = e.currentTarget;
+                        const containerHeight = container.clientHeight;
+                        for (let i = 0; i < 3; i++) {
+                          const leaf = document.createElement("div");
+                          leaf.className = "falling-leaf";
+                          leaf.style.left = `${Math.random() * 90}%`;;
+                          leaf.style.top = `${containerHeight * 0.1}px`;
+                          leaf.style.animationDelay = `${i * 0.2}s`; 
+
+                          e.currentTarget.appendChild(leaf);
+
+                          setTimeout(() => {
+                            leaf.remove();
+                          }, 1600);
+                        }
+
+                        }}
+                      >
+                        <Image
+                          src={src}
+                          alt={type.species}
+                          fill
+                          className="object-cover object-center rounded-lg transition-all duration-300"
+                          priority
+                        />
+                      </div>
+
                         <div className="relative w-full px-4">
                           {growth_value >= max && (
                             <div className="absolute -top-12 right-4 flex items-center gap-0 animate-bounce">
