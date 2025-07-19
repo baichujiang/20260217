@@ -41,7 +41,7 @@ export default function RegisterPage() {
 
             // Wait 3 seconds before redirecting
             setTimeout(() => {
-                router.replace("/account")
+                router.push("/account")
             }, 3000)
         } catch (error: any) {
             console.error("Registration error:", error)

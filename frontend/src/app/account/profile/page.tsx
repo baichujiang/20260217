@@ -39,7 +39,7 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
       const storedToken = localStorage.getItem("token");
       if (!storedToken) {
-        router.replace("/account");
+        router.push("/account");
         return;
       }
 
@@ -67,7 +67,7 @@ export default function ProfilePage() {
       } catch (err) {
         console.error("Error loading profile:", err);
         localStorage.removeItem("token");
-        router.replace("/account");
+        router.push("/account");
       } finally {
         setLoading(false);
       }
@@ -97,7 +97,7 @@ export default function ProfilePage() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("selectedAvatar");
-    router.replace("/account");
+    router.push("/account");
   };
 
   const handleSaveAvatar = async () => {

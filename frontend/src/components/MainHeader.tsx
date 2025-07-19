@@ -26,7 +26,7 @@ export default function MainHeader() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      router.replace(`/restaurant-search?name=${encodeURIComponent(searchQuery.trim())}`)
+      router.push(`/restaurant-search?name=${encodeURIComponent(searchQuery.trim())}`)
       setShowSearchInput(false)
       setSearchQuery("")
     }

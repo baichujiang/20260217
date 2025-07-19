@@ -27,7 +27,7 @@ export default function OverviewReviewTab({ restaurant, comments, tags }: Props)
       return;
     }
 
-    router.replace(`/review?id=${restaurant.id}`);
+    router.push(`/review?id=${restaurant.id}`);
   }, [restaurant.id, router]);
 
   return (

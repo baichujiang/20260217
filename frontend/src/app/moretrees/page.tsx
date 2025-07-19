@@ -55,7 +55,7 @@ export default function MoreTreesPage() {
       });
       if (!res.ok) throw new Error(`Error ${res.status}`);
       await res.json();
-      router.replace("/tree");
+      router.push("/tree");
     } catch (err) {
       console.error(err);
       alert("Failed to create tree");

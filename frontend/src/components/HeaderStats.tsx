@@ -20,12 +20,12 @@ export function HeaderStats({
     <div className="flex justify-between items-center mb-6 px-4">
       <div
         className="relative inline-flex items-center bg-white rounded-full px-4 pl-12 py-2 transition hover:ring-2 hover:ring-green-300"
-        onClick={() => router.replace("/badge")}
+        onClick={() => router.push("/badge")}
       >
         <div
           onClick={(e) => {
             e.stopPropagation();
-            router.replace("/account/profile");
+            router.push("/account/profile");
           }}
           className="absolute left-0 ml-1 w-10 h-10 rounded-full overflow-hidden border-2 border-white cursor-pointer z-10"
         >
@@ -42,7 +42,7 @@ export function HeaderStats({
       </div>
 
       <div
-        onClick={() => router.replace("/moretrees")}
+        onClick={() => router.push("/moretrees")}
         className="inline-flex items-center bg-white rounded-full px-4 py-2 cursor-pointer hover:ring-2 hover:ring-green-300 transition"
       >
         <div className="flex flex-col items-start leading-tight">
