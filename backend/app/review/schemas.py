@@ -42,7 +42,7 @@ class ReviewBase(BaseModel):
     food_rating: Rating
     service_rating: Rating
     environment_rating: Rating
-    sustainability_rating: Rating
+    sustainability_rating: float
     sourcing_rating: Rating
     waste_rating: Rating
     menu_rating: Rating
