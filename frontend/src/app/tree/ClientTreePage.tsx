@@ -197,25 +197,28 @@ export default function ClientTreePage() {
       </Suspense>
 
       <Header />
-      
+
       <section className="relative">
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
         <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
-        <div className="p-4 pb-0">
+        <div className="p-4 pb-0 relative">
           <HeaderStats badges={badges.filter(b => b.unlocked && b.currentProgress >= b.requiredProgress).length} greenPoints={greenPoints} avatarUrl={user?.avatar_url || "/avatar-default.svg"} />
-          <button
-        onClick={() => router.push("/myrewards")}
-        className="absolute top-21 left-5 z-50 p-0 bg-transparent rounded-full animate-float transition active:scale-95 hover:scale-105"
-        aria-label="My Rewards"
-        >
-        <Image
-            src="/rewards.png" 
-            alt="My Rewards"
-            width={80}
-            height={80}
-            className="drop-shadow-lg"
-        />
-        </button>
+
+          <div className="absolute top-21 left-1 z-40 flex gap-4 px-4">
+            <button
+              onClick={() => router.push("/myrewards")}
+              className="p-0 bg-transparent rounded-full animate-float transition active:scale-95 hover:scale-105"
+              aria-label="My Rewards"
+            >
+              <Image
+                src="/rewards.png"
+                alt="My Rewards"
+                width={80}
+                height={80}
+                className="drop-shadow-lg"
+              />
+            </button>
+            </div>
         </div>
         {trees.length === 0 ? (
                 <div className="flex flex-col items-center justify-center text-center mt-24 px-4 relative">
@@ -286,6 +289,7 @@ export default function ClientTreePage() {
 
                   </button>
                 </div>
+                
               )}
   
               <button onClick={goPrev} className="absolute top-1/2 left-2 z-10 p-2">❮</button>
