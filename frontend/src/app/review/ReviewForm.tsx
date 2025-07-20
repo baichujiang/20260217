@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Star, X } from "lucide-react"
@@ -17,6 +18,7 @@ export default function ReviewForm({
     restaurant_name,
     tags
 }: ReviewFormProps) {
+  const router = useRouter();
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [experience, setExperience] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
@@ -116,9 +118,16 @@ const handleSubmit = async () => {
       throw new Error(errorText || "Failed to submit review");
     }
 
-    const data = await res.json(); // Full ReviewRead object
+    const data = await res.json();
 
-    toast("Review submitted successfully!");
+    toast("Review submitted successfully", {
+          description: "You've got 3 new points — time to give your tree some love!",
+          action: {
+            label: "Go",
+            onClick: () => router.push("/tree"),
+          },
+          duration: 60000,
+    });
     setRatings({});
     setExperience("");
     setSelectedTags([]);
