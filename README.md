@@ -1,7 +1,8 @@
+<p align="center">
+  <img src="frontend/public/logo.png" alt="logo" width="500"/>
+</p>
 
-![Logo](/frontend/public/logo.png)
-
-# About the project
+## About the project
 
 LeafMiles is a modern web application designed to help users discover and review sustainable restaurants. With features like top sustainable restaurant recommendations, a search interface, detailed reviews with categorized sustainability tags (e.g., Sourcing, Menu, Waste, Energy), and image uploads, LeafMiles empowers sustainability-conscious consumers to make informed dining choices.
 
@@ -90,7 +91,6 @@ To run this project, you will need to set up the following environment variables
 
 You can run the project locally in two ways: **standard (manual)** or **Docker-based**.
 
----
 
 ### Option 1: Run Locally (Manual Setup)
 
@@ -127,8 +127,6 @@ npm run dev
 Frontend: http://localhost:3000
 
 Backend: http://localhost:8000/docs
-
----
 
 ### Option 2: Run with Docker
 Make sure Docker is installed and running on your system.
