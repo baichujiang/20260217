@@ -1,5 +1,3 @@
-// frontend/src/lib/fetchWithAuth.ts
-
 export async function fetchWithAuth(
   url: string,
   options: RequestInit = {}

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { RestaurantCardProps } from "@/types/restaurant"
 import RestaurantCard from "@/components/RestaurantCard"
-import { Card, CardContent } from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,

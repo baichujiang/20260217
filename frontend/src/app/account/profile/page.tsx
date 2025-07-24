@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserCircle, Pencil, Trophy, Flame, Award, Calendar } from "lucide-react";
+import { UserCircle, Pencil, Trophy, Flame, Calendar } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 
