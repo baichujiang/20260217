@@ -1,0 +1,5 @@
+species,goal_growth_value,image_src
+Apple,100,/apple_tree.png
+Banana,90,/banana_tree.png
+Orange,80,/orange_tree.png
+Coupon,300,/coupon_tree.png

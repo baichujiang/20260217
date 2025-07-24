@@ -1,15 +1,13 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from ..core.database import Base
 
-class User(Base):
-    __tablename__ = "users"
+class UserCredentials(Base):
+    __tablename__ = "user_credentials"
+
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
+    user_id = Column(ForeignKey("users.id"))
     hashed_password = Column(String)
 
-    # ✅ 一对多关系：一个用户可以有多棵树和多条积分记录
-    trees = relationship("Tree", back_populates="user", cascade="all, delete-orphan")
-    points = relationship("Point", back_populates="user", cascade="all, delete-orphan")
-    watering_logs = relationship("WateringLog", back_populates="user", cascade="all, delete-orphan")
+    user = relationship("User", back_populates="credentials")
 

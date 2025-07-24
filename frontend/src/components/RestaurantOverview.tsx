@@ -1,25 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { ShieldCheck, Recycle, Leaf, Zap, MapPin, Globe2 } from "lucide-react"
 import { JSX } from "react"
+import { Restaurant } from "@/types/restaurant"
 
 type ScoreItem = {
   label: "Sourcing" | "Waste" | "Menu" | "Energy"
-  score: number
+  score: number | null | undefined
 }
 
-type RestaurantInfo = {
-  address: string
-  website: string
-  scores: {
-    sourcing_score: number
-    waste_score: number
-    menu_score: number
-    energy_score: number
-  }
-}
 
 const icons: Record<ScoreItem["label"], JSX.Element> = {
   Sourcing: <ShieldCheck className="w-5 h-5" />,
@@ -28,34 +18,18 @@ const icons: Record<ScoreItem["label"], JSX.Element> = {
   Energy: <Zap className="w-5 h-5" />,
 }
 
-type RestaurantOverviewProps = {
-  restaurantId: string | null
-}
 
-export default function RestaurantOverview({ restaurantId }: RestaurantOverviewProps) {
-  const [data, setData] = useState<RestaurantInfo | null>(null)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`http://localhost:4000/restaurants/${restaurantId}`, {
-        cache: "no-store",
-      })
-      const result = await res.json()
-      setData(result)
-    }
-
-    fetchData()
-  }, [restaurantId])
+export default function RestaurantOverview(data: Restaurant) {
 
   if (!data) {
     return <p>Loading...</p>
   }
 
   const scores: ScoreItem[] = [
-    { label: "Sourcing", score: data.scores.sourcing_score },
-    { label: "Waste", score: data.scores.waste_score },
-    { label: "Menu", score: data.scores.menu_score },
-    { label: "Energy", score: data.scores.energy_score },
+    { label: "Sourcing", score: data.sourcing_score },
+    { label: "Waste", score: data.waste_score },
+    { label: "Menu", score: data.menu_score },
+    { label: "Energy", score: data.energy_score },
   ]
 
   return (
@@ -67,7 +41,14 @@ export default function RestaurantOverview({ restaurantId }: RestaurantOverviewP
         </div>
         <div className="flex items-start gap-2">
           <Globe2 className="w-5 h-5 text-black mt-0.5" />
-          <p className="truncate">{data.website}</p>
+          <a
+            href={data.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="truncate text-blue-600 hover:underline"
+          >
+            {data.website}
+          </a>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3 max-w-md mx-auto mt-6">
@@ -78,7 +59,9 @@ export default function RestaurantOverview({ restaurantId }: RestaurantOverviewP
                 {icons[label]}
                 {label}
               </div>
-              <div className="text-sm font-semibold">{score.toFixed(1)}</div>
+              <div className="text-sm font-semibold">
+                {typeof score === "number" ? score.toFixed(1) : "N/A"}
+              </div>
             </CardContent>
           </Card>
         ))}

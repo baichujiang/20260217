@@ -1,6 +1,5 @@
 "use client"
 
-// components/ui/drawer.tsx
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
@@ -20,12 +19,18 @@ const DrawerContent = React.forwardRef<
         <DialogPrimitive.Content
             ref={ref}
             className={cn(
-                "fixed bottom-0 left-0 right-0 z-50 m-0 w-full rounded-t-lg bg-white p-6 shadow-lg animate-in slide-in-from-bottom duration-300",
+                "fixed top-0 left-0 bottom-0 z-50 m-0 h-full w-64 rounded-none bg-white p-6 shadow-lg animate-in slide-in-from-left duration-300",
                 className
             )}
             {...props}
         >
+            {/* ✅ This satisfies Radix's requirement */}
+            <DialogPrimitive.Title className="sr-only">
+                Menu
+            </DialogPrimitive.Title>
+
             {children}
+
             <DialogPrimitive.Close className="absolute right-4 top-4">
                 <X className="h-5 w-5" />
             </DialogPrimitive.Close>
@@ -35,3 +40,4 @@ const DrawerContent = React.forwardRef<
 DrawerContent.displayName = "DrawerContent"
 
 export { Drawer, DrawerTrigger, DrawerContent, DrawerClose }
+

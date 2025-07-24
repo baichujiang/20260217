@@ -26,3 +26,6 @@ Thumbs.db
 *.mypy_cache/
 .pdm.toml
 __pypackages__/
+
+
+/uploads
