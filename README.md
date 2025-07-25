@@ -77,7 +77,7 @@ To run this project, you will need to set up the following environment variables
 
 | Variable | Description |
 |----------|-------------|
-| `DATABASE_URL` | Full connection string for the PostgreSQL database.Must use the `postgresql+asyncpg` dialect (e.g. `postgresql+asyncpg://user:password@host:port/database`)|
+| `DATABASE_URL` | Full connection string for the PostgreSQL database. Must use the `postgresql+asyncpg` dialect (e.g. `postgresql+asyncpg://user:password@host:port/database`)|
 | `SECRET_KEY` | Secret key used to sign JWT tokens|
 | `ALGORITHM` | JWT signing algorithm (e.g. `HS256`) |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Duration in minutes before access tokens expire (e.g. `30`) |
