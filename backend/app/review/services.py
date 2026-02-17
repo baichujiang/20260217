@@ -162,6 +162,11 @@ SUPABASE_BUCKET = "leafmiles-review-images"
 SIGNED_URL_EXPIRY = 3600
 
 async def save_and_create_review_image(session: AsyncSession, review_id: UUID, file: UploadFile) -> ReviewImage:
+    if supabase is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Image upload is not configured. Set SUPABASE_URL and SUPABASE_KEY to enable.",
+        )
     ext = file.filename.split(".")[-1]
     image_id = uuid.uuid4()
     filename = f"{review_id}/{image_id}.{ext}"
@@ -220,7 +225,9 @@ async def get_review_images_by_review(db: AsyncSession, review_id: UUID) -> List
 
 
 def get_public_url(path: str) -> str:
+    if supabase is None:
+        return ""
     result = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(path)
-    if "error" in result and result["error"]:
-        raise HTTPException(status_code=500, detail="Failed to generate signed URL: " + result["error"]["message"])
-    return result
+    if isinstance(result, dict) and result.get("error"):
+        raise HTTPException(status_code=500, detail="Failed to generate signed URL: " + str(result.get("error", {}).get("message", "")))
+    return result if isinstance(result, str) else ""
