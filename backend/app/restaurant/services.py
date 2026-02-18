@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, nulls_last
 from .models import Restaurant
 from .schemas import RestaurantCreate, RestaurantUpdate
 from ..review.models import ReviewTag, review_tag_association, Review
@@ -85,10 +85,13 @@ async def get_top_tags_for_restaurant(session: AsyncSession, restaurant_id: int,
     return result.all()
 
 async def get_top_sustainable_restaurants(db: AsyncSession, limit: int = 5) -> List[Restaurant]:
+    # 有 sustainability_score 的排前面，没有的用 normal_score 凑，保证首页有数据
     stmt = (
         select(Restaurant)
-        .where(Restaurant.sustainability_score != None)
-        .order_by(desc(Restaurant.sustainability_score))
+        .order_by(
+            nulls_last(desc(Restaurant.sustainability_score)),
+            nulls_last(desc(Restaurant.normal_score)),
+        )
         .limit(limit)
     )
     result = await db.execute(stmt)
