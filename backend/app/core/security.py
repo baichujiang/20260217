@@ -7,6 +7,10 @@ from .config import settings
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
+    # bcrypt 只接受最多 72 字节，超出会报 ValueError，先按字节截断
+    raw = password.encode("utf-8")
+    if len(raw) > 72:
+        password = raw[:72].decode("utf-8", errors="ignore") or "x"
     return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

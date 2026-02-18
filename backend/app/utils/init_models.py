@@ -16,8 +16,10 @@ from ..core.database import Base
 
 async def init_models(engine: AsyncEngine):
     async with engine.begin() as conn:
-        # Create pg_trgm extension if it doesn't exist
-        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm;"))
-
+        # 若数据库无权限创建扩展可忽略（如 Render 托管 Postgres）
+        try:
+            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm;"))
+        except Exception:
+            pass
         # 一次性创建所有已注册的表（users, trees, restaurants, reviews, badges, harvest, checkin 等）
         await conn.run_sync(Base.metadata.create_all)

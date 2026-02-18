@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.security import OAuth2PasswordRequestForm
@@ -6,11 +7,18 @@ from ..core import database
 from . import services, schemas
 from ..core.security import create_access_token
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=schemas.UserRegisterRead)
 async def register(user: schemas.UserCreate, db: AsyncSession = Depends(database.get_db)):
-    return await services.create_user(db, user)
+    try:
+        return await services.create_user(db, user)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Registration failed: %s", e)
+        raise HTTPException(status_code=500, detail="Registration failed. Check server logs.")
 
 @router.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(database.get_db)):
