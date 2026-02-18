@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 
 from .core.database import engine
@@ -48,13 +49,33 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# 与浏览器 Origin 完全一致（无末尾斜杠），避免 CORS 不通过；错误响应也会带 CORS 头
+_frontend_origin = (settings.FRONTEND_URL or "").rstrip("/")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL],
+    allow_origins=[_frontend_origin] if _frontend_origin else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
+
+
+@app.exception_handler(Exception)
+async def add_cors_to_error(request, exc):
+    """确保 500 等错误响应也带 CORS 头；HTTPException 交给默认处理"""
+    if isinstance(exc, HTTPException):
+        raise exc
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"},
+        headers={
+            "Access-Control-Allow-Origin": _frontend_origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        } if _frontend_origin else None,
+    )
 
 app.include_router(auth_router)
 app.include_router(tree_router)
