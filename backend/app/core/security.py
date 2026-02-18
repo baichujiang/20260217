@@ -1,20 +1,21 @@
 from fastapi import HTTPException, status
-from passlib.context import CryptContext
+import bcrypt
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from .config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt 只接受最多 72 字节，统一在此截断
+def _to_bcrypt_secret(password: str) -> bytes:
+    raw = password.encode("utf-8")
+    return raw[:72] if len(raw) > 72 else raw
 
 def hash_password(password: str) -> str:
-    # bcrypt 只接受最多 72 字节，超出会报 ValueError，先按字节截断
-    raw = password.encode("utf-8")
-    if len(raw) > 72:
-        password = raw[:72].decode("utf-8", errors="ignore") or "x"
-    return pwd_context.hash(password)
+    secret = _to_bcrypt_secret(password)
+    return bcrypt.hashpw(secret, bcrypt.gensalt()).decode("utf-8")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    secret = _to_bcrypt_secret(plain_password)
+    return bcrypt.checkpw(secret, hashed_password.encode("utf-8"))
 
 def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
     to_encode = data.copy()

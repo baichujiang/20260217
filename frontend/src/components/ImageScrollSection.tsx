@@ -13,6 +13,9 @@ import {
 
 import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
+// 首页无评论图时用的示例图（public/restaurants/R1.jpeg ~ R10.jpeg）
+const PLACEHOLDER_IMAGES = Array.from({ length: 10 }, (_, i) => `/restaurants/R${i + 1}.jpeg`)
+
 export default function ImageScrollSection() {
   const [restaurants, setRestaurants] = useState<RestaurantCardProps[]>([])
 
@@ -26,13 +29,14 @@ export default function ImageScrollSection() {
         const data = await res.json()
 
         const enriched = await Promise.all(
-          data.map(async (restaurant: any) => {
+          data.map(async (restaurant: any, index: number) => {
+            const placeholder = PLACEHOLDER_IMAGES[index % PLACEHOLDER_IMAGES.length]
             try {
               const imgRes = await fetch(
                 `${api}/reviews/restaurant/${restaurant.id}/images?limit=1`
               )
               const imgData = await imgRes.json()
-              const image = imgData.length > 0 ? imgData[0].url : "/default-restaurant.png"
+              const image = imgData.length > 0 ? imgData[0].url : placeholder
 
               return {
                 id: restaurant.id,
@@ -49,7 +53,7 @@ export default function ImageScrollSection() {
                 address: restaurant.address,
                 normal_score: restaurant.normal_score,
                 sustainability_score: restaurant.sustainability_score,
-                image: "/default-restaurant.png",
+                image: placeholder,
               } satisfies RestaurantCardProps
             }
           })
