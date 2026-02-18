@@ -11,7 +11,7 @@ interface LeaderboardEntry {
 
 type Period = 'daily' | 'week' | 'total';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export const Leaderboard: React.FC = () => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
@@ -20,10 +20,12 @@ export const Leaderboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
+    const api = getApiBaseUrl();
+    if (!api) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/trees/leaderboard?period=${period}`);
+      const res = await fetch(`${api}/trees/leaderboard?period=${period}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
       const data: LeaderboardEntry[] = await res.json();
       setEntries(data);
@@ -63,7 +65,7 @@ export const Leaderboard: React.FC = () => {
           <li key={e.id} className="flex items-center justify-between py-2">
             <div className="flex items-center space-x-3">
               <Image
-                src={e.avatar_url || "/avatar-default.svg"}
+                src={e.avatar_url || "/avatars/default.svg"}
                 alt="Avatar"
                 width={32}
                 height={32}

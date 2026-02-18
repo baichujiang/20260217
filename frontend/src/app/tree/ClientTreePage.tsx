@@ -45,7 +45,7 @@ interface User {
   avatar_url?: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export default function ClientTreePage() {
   const [trees, setTrees] = useState<TreeData[]>([]);
@@ -80,7 +80,9 @@ export default function ClientTreePage() {
   }
   
   useEffect(() => {
-    fetchWithAuth(`${API_BASE_URL}/badges/my`)
+    const api = getApiBaseUrl();
+    if (!api) return;
+    fetchWithAuth(`${api}/badges/my`)
       .then((res) => res.json())
       .then((data) => {
         setBadges(data); 
@@ -91,21 +93,27 @@ export default function ClientTreePage() {
   }, []);
 
   useEffect(() => {
-    fetchWithAuth(`${API_BASE_URL}/trees/me`)
+    const api = getApiBaseUrl();
+    if (!api) return;
+    fetchWithAuth(`${api}/trees/me`)
       .then(res => res.json())
       .then((data: TreeData[]) => setTrees(data))
       .catch(console.error);
   }, []);
 
   useEffect(() => {
-    fetchWithAuth(`${API_BASE_URL}/points/me/total`)
+    const api = getApiBaseUrl();
+    if (!api) return;
+    fetchWithAuth(`${api}/points/me/total`)
       .then(res => res.json())
       .then(data => setGreenPoints(data.total_points))
       .catch(console.error);
   }, []);
 
   useEffect(() => {
-    fetchWithAuth(`${API_BASE_URL}/users/me`)
+    const api = getApiBaseUrl();
+    if (!api) return;
+    fetchWithAuth(`${api}/users/me`)
       .then(res => res.json())
       .then(data => setUser(data))
       .catch(console.error);
@@ -130,9 +138,11 @@ export default function ClientTreePage() {
     greenPoints >= 10;
 
   async function handleWater(treeId: number, idx: number) {
+    const api = getApiBaseUrl();
+    if (!api) return;
     try {
       const res = await fetchWithAuth(
-        `${API_BASE_URL}/trees/${treeId}/water`,
+        `${api}/trees/${treeId}/water`,
         {
           method: "POST",
           body: JSON.stringify({ amount: 10 }),
@@ -148,8 +158,10 @@ export default function ClientTreePage() {
   }
 
   async function handleCreateTree(type_id: number) {
+    const api = getApiBaseUrl();
+    if (!api) return;
     try {
-      const res = await fetchWithAuth(`${API_BASE_URL}/trees/`, {
+      const res = await fetchWithAuth(`${api}/trees/`, {
         method: "POST",
         body: JSON.stringify({ type_id }),
       });
@@ -168,9 +180,11 @@ export default function ClientTreePage() {
 
   async function handleHarvestSubmit(data: AddressFormData) {
     if (selectedTreeId === null) return;
+    const api = getApiBaseUrl();
+    if (!api) return;
     try {
       const res = await fetchWithAuth(
-        `${API_BASE_URL}/harvest/${selectedTreeId}`,
+        `${api}/harvest/${selectedTreeId}`,
         {
           method: "POST",
           body: JSON.stringify(data),
@@ -209,7 +223,7 @@ export default function ClientTreePage() {
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-green-200 -z-10" />
         <div className="absolute inset-x-0 top-0 h-full bg-[url('/background.png')] bg-cover bg-bottom -z-10" />
         <div className="p-4 pb-0 relative">
-          <HeaderStats badges={badges.filter(b => b.unlocked && b.currentProgress >= b.requiredProgress).length} greenPoints={greenPoints} avatarUrl={user?.avatar_url || "/avatar-default.svg"} />
+          <HeaderStats badges={badges.filter(b => b.unlocked && b.currentProgress >= b.requiredProgress).length} greenPoints={greenPoints} avatarUrl={user?.avatar_url || "/avatars/default.svg"} />
 
           <div className="absolute top-21 left-1 z-40 flex gap-4 px-4">
             <button

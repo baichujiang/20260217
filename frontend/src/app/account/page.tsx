@@ -8,7 +8,7 @@ import { Header } from "@/components/Header";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export default function AccountPage() {
     const router = useRouter();
@@ -57,7 +57,7 @@ export default function AccountPage() {
             params.append("password", formData.password);
 
             const response = await axios.post(
-                `${API_BASE_URL}/auth/token`,
+                `${getApiBaseUrl()}/auth/token`,
                 params,
                 {
                     headers: {

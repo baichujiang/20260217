@@ -16,7 +16,7 @@ interface Badge {
   lastUnlocked?: number;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export default function BadgesPage() {
   const [badges, setBadges] = useState<Badge[]>([]);
@@ -24,8 +24,10 @@ export default function BadgesPage() {
 
   useEffect(() => {
     const fetchBadges = async () => {
+      const api = getApiBaseUrl();
+      if (!api) return;
       try {
-        const res = await fetchWithAuth(`${API_BASE_URL}/badges/my`);
+        const res = await fetchWithAuth(`${api}/badges/my`);
         const data = await res.json();
         setBadges(data);
       } catch (err) {

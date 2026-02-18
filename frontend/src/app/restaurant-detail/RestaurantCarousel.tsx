@@ -23,7 +23,7 @@ interface ReviewImage {
   uploaded_at: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export default function RestaurantCarousel() {
   const searchParams = useSearchParams();
@@ -38,7 +38,7 @@ export default function RestaurantCarousel() {
 
     const fetchImages = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/reviews/restaurant/${id}/images`);
+        const res = await fetch(`${getApiBaseUrl()}/reviews/restaurant/${id}/images`);
 
         if (!res.ok) throw new Error("Failed to fetch images");
 

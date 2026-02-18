@@ -10,7 +10,7 @@ import { toast } from "sonner"
 import { Review, ReviewFormProps, Tag } from "@/types/review"
 
 const categories = ["General", "Food", "Service", "Environment", "Sourcing", "Waste", "Menu", "Energy"]
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 
 export default function ReviewForm({ 
@@ -105,7 +105,7 @@ const handleSubmit = async () => {
   });
 
   try {
-    const res = await fetch(`${API_BASE_URL}/reviews/`, {
+    const res = await fetch(`${getApiBaseUrl()}/reviews/`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

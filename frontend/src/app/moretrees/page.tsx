@@ -14,7 +14,7 @@ interface TreeOption {
   image_src: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export default function MoreTreesPage() {
   const router = useRouter();
@@ -26,8 +26,10 @@ export default function MoreTreesPage() {
 
   useEffect(() => {
     const fetchTreeTypes = async () => {
+      const api = getApiBaseUrl();
+      if (!api) return;
       try {
-        const res = await fetchWithAuth(`${API_BASE_URL}/trees/types`);
+        const res = await fetchWithAuth(`${api}/trees/types`);
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         setOptions(
@@ -47,9 +49,11 @@ export default function MoreTreesPage() {
   }, []);
 
   const handleCreateTree = async (type_id: number) => {
+    const api = getApiBaseUrl();
+    if (!api) return;
     setCreating(true);
     try {
-      const res = await fetchWithAuth(`${API_BASE_URL}/trees/`, {
+      const res = await fetchWithAuth(`${api}/trees/`, {
         method: "POST",
         body: JSON.stringify({ type_id }),
       });

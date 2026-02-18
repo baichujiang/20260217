@@ -6,7 +6,7 @@ import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/Header"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({ username: "", password: "" })
@@ -25,7 +25,7 @@ export default function RegisterPage() {
 
         try {
             const response = await axios.post(
-                `${API_BASE_URL}/auth/register`,
+                `${getApiBaseUrl()}/auth/register`,
                 {
                     username: formData.username,
                     password: formData.password,

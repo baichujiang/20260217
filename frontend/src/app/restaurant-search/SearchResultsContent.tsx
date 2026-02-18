@@ -6,7 +6,7 @@ import RestaurantList from "@/components/RestaurantList"
 import { RestaurantCardProps } from "@/types/restaurant"
 import { Header } from "@/components/Header"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+import { getApiBaseUrl } from "@/lib/apiBaseUrl"
 
 export default function SearchResultsContent() {
   const searchParams = useSearchParams()
@@ -18,14 +18,16 @@ export default function SearchResultsContent() {
     if (!query) return
 
     const fetchResults = async () => {
+      const api = getApiBaseUrl()
+      if (!api) return
       try {
-        const res = await fetch(`${API_BASE_URL}/restaurants/search?name=${encodeURIComponent(query)}`)
+        const res = await fetch(`${api}/restaurants/search?name=${encodeURIComponent(query)}`)
         const data = await res.json()
 
         const restaurantsWithImages = await Promise.all(
           data.map(async (restaurant: any) => {
             try {
-              const imgRes = await fetch(`${API_BASE_URL}/reviews/restaurant/${restaurant.id}/images?limit=1`)
+              const imgRes = await fetch(`${api}/reviews/restaurant/${restaurant.id}/images?limit=1`)
               const imgs = await imgRes.json()
               const image = imgs[0]?.url ?? "/default-restaurant.png"
 

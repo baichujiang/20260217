@@ -6,7 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 export function HeaderStats({
   badges,
   greenPoints,
-  avatarUrl = "/avatar-default.svg",
+  avatarUrl = "/avatars/default.svg",
 }: {
   badges: number
   greenPoints: number

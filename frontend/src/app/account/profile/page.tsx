@@ -16,7 +16,7 @@ type UserProfile = {
   total_points: number;
 };
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -46,7 +46,7 @@ export default function ProfilePage() {
       setToken(storedToken);
 
       try {
-        const response = await fetch(`${API_BASE_URL}/users/me`, {
+        const response = await fetch(`${getApiBaseUrl()}/users/me`, {
           headers: {
             Authorization: `Bearer ${storedToken}`,
           },
@@ -78,7 +78,7 @@ export default function ProfilePage() {
       if (!storedToken) return;
 
       try {
-        const res = await fetch(`${API_BASE_URL}/checkin/status`, {
+        const res = await fetch(`${getApiBaseUrl()}/checkin/status`, {
           headers: { Authorization: `Bearer ${storedToken}` },
         });
 
@@ -104,7 +104,7 @@ export default function ProfilePage() {
     if (!selectedAvatar || !token) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/avatar`, {
+      const response = await fetch(`${getApiBaseUrl()}/users/avatar`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -130,7 +130,7 @@ export default function ProfilePage() {
     setCheckInLoading(true);
 
     try {
-      const statusRes = await fetch(`${API_BASE_URL}/checkin/status`, {
+      const statusRes = await fetch(`${getApiBaseUrl()}/checkin/status`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -141,7 +141,7 @@ export default function ProfilePage() {
         return;
       }
 
-      const checkinRes = await fetch(`${API_BASE_URL}/checkin/`, {
+      const checkinRes = await fetch(`${getApiBaseUrl()}/checkin/`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });

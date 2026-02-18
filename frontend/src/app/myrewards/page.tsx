@@ -16,7 +16,7 @@ interface Reward {
   submitted_at: string
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export default function MyRewardsPage() {
   const [rewards, setRewards] = useState<Reward[]>([])
@@ -24,8 +24,10 @@ export default function MyRewardsPage() {
 
   useEffect(() => {
     const fetchRewards = async () => {
+      const api = getApiBaseUrl()
+      if (!api) return
       try {
-        const res = await fetchWithAuth(`${API_BASE_URL}/harvest/me/rewards`)
+        const res = await fetchWithAuth(`${api}/harvest/me/rewards`)
         const data = await res.json()
         setRewards(data)
       } catch (e) {

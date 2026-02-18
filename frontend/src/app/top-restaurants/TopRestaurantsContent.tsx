@@ -5,7 +5,7 @@ import { Header } from "@/components/Header"
 import RestaurantList from "@/components/RestaurantList"
 import { RestaurantCardProps } from "@/types/restaurant"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 export default function TopRestaurantsContent() {
   const [restaurants, setRestaurants] = useState<RestaurantCardProps[]>([])
@@ -13,9 +13,11 @@ export default function TopRestaurantsContent() {
 
   useEffect(() => {
     const fetchRestaurants = async () => {
+      const api = getApiBaseUrl()
+      if (!api) return
       try {
-        const res = await fetch(`${API_BASE_URL}/restaurants/top-sustainable?limit=10`)
-        if (!res.ok) throw new Error("Failed to fetch restaurants")
+        const res = await fetch(`${api}/restaurants/top-sustainable?limit=10`)
+        if (!res.ok) throw new Error(`Failed to fetch restaurants: ${res.status}`)
 
         const data = await res.json()
 
@@ -23,7 +25,7 @@ export default function TopRestaurantsContent() {
           data.map(async (restaurant: any) => {
             try {
               const imgRes = await fetch(
-                `${API_BASE_URL}/reviews/restaurant/${restaurant.id}/images?limit=1`
+                `${api}/reviews/restaurant/${restaurant.id}/images?limit=1`
               )
               const imgs = await imgRes.json()
               const image = imgs[0]?.url ?? "/default-restaurant.png"
